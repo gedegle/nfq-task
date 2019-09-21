@@ -1,0 +1,82 @@
+[
+    {
+    "index": 1,
+    "qNumber": 237,
+    "name": "Joel",
+    "surname": "Boswell",
+        "spec": "Odontologas",
+    "bool": false
+    },
+    {
+    "index": 2,
+    "qNumber": 72,
+    "name": "Lynn",
+    "surname": "Gallagher",
+        "spec": "Odontologas",
+    "bool": false
+    },
+    {
+    "index": 3,
+    "qNumber": 489,
+    "name": "Glen",
+    "surname": "Pearson",
+        "spec": "Neurologas",
+    "bool": true
+    },
+    {
+    "index": 4,
+    "qNumber": 296,
+    "name": "Paige",
+    "surname": "Schultz",
+        "spec": "Neurologas",
+    "bool": true
+    },
+    {
+    "index": 5,
+    "qNumber": 243,
+    "name": "Florence",
+    "surname": "Farmer",
+        "spec": "Kardiologas",
+    "bool": false
+    },
+    {
+    "index": 6,
+    "qNumber": 47,
+    "name": "Glenda",
+    "surname": "Cassidy",
+        "spec": "Ginekologas",
+    "bool": false
+    },
+    {
+    "index": 7,
+    "qNumber": 258,
+    "name": "Marcus",
+    "surname": "Clarke",
+        "spec": "Šeimos gydytojas",
+    "bool": true
+    },
+    {
+    "index": 8,
+    "qNumber": 108,
+    "name": "Ernest",
+    "surname": "Aycock",
+        "spec": "Odontologas",
+    "bool": true
+    },
+    {
+    "index": 9,
+    "qNumber": 63,
+    "name": "Audrey",
+    "surname": "Massey",
+        "spec": "Odontologas",
+    "bool": true
+    },
+    {
+    "index": 10,
+    "qNumber": 210,
+    "name": "Alison",
+    "surname": "Butler",
+        "spec": "Šeimos gydytojas",
+    "bool": true
+    }
+    ]
