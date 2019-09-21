@@ -183,22 +183,21 @@ class AddNew extends Component{
     }
 }
 
-class PatientRow extends Component {
-
-    render() {
+function PatientRow (props){
         return (
             <tr>
-                <th key={this.props.key} id={this.props.id} scope={"row"}>{this.props.counter}</th>
-                <td key={this.props.key} id={this.props.id}>{this.props.name}</td>
-                <td key={this.props.key} id={this.props.id}>{this.props.surname}</td>
-                <td key={this.props.key} id={this.props.id}>{this.props.qNumber}</td>
-                <td><button className="row-delete"
+                <th key={props.key} id={props.id} scope={"row"}>{props.counter}</th>
+                <td key={props.key} id={props.id}>{props.name}</td>
+                <td key={props.key} id={props.id}>{props.surname}</td>
+                <td key={props.key} id={props.id}>{props.qNumber}</td>
+                {/*<td><button className="row-delete"
                             onClick={this.props.deleteItem}>Aptarnauta
-                </button></td>
+                </button></td>*/}
+                <td><button onClick={props.handleDoneCheck}>Aptarnauta</button>
+                </td>
             </tr>
 
         );
-    }
 }
 class SpecPage extends Component{
     constructor(props){
@@ -206,11 +205,11 @@ class SpecPage extends Component{
         this.state = {
             list: [],
             error: null,
-            currentSpec: ""
+            currentSpec: "",
+            isServiced: false
         }
         this.addNewPatient =this.addNewPatient.bind(this);
-        this.updateFormState = this.updateFormState.bind(this);
-        this.updateLocalStorage = this.updateLocalStorage.bind(this);
+        this.updateFromState = this.updateFromState.bind(this);
 
         if(peopleArr.length <= 1){
             this.count = 1;
@@ -224,7 +223,6 @@ class SpecPage extends Component{
         console.log(data);
         this.setState({list: data})
     }
-
     componentDidMount() {
         console.log('did mount')
         let url = './data.json';
@@ -264,14 +262,17 @@ class SpecPage extends Component{
 
     deleteItem = indexToDelete => {
         this.setState(({ list }) => ({
-            list: newArr = list.filter((toDo, index) => index !== indexToDelete)
-
+            list: newArr = list.filter((people, index) => index !== indexToDelete)
         }));
+
+console.log(this.state)
     };
-    updateLocalStorage(){
+
+/*
+    updateLocalStorage(arr){
         const data = localStorage.getItem('listCopy');
 
-        newArr.map((item) => {
+        arr.map((item) => {
             peopleArr.push(item);
         })
         peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
@@ -280,19 +281,42 @@ class SpecPage extends Component{
         }
 //deletion from json here
 
+    }*/
+    handleDoneCheck (index) {
+        let temp;
+        let tempArr = [];
+        const data = localStorage.getItem('listCopy');
+
+            this.state.list.map((item) => {
+                if (item.index === index) {
+                    item.bool = true;
+                    temp = item;
+
+                }
+                tempArr.push(item);
+
+            })
+        if(data) {
+            localStorage.setItem('listCopy',JSON.stringify(tempArr))
+        }
+        this.setState({
+            list: tempArr
+        })
     }
-    updateFormState(spec) {
+
+    updateFromState(spec) {
         this.setState(spec, this.updatePeopleList);
     }
     updatePeopleList() {
-        console.log(peopleArr)
+
         var filteredPeople;
         const data = localStorage.getItem('listCopy');
         if(!data) {
             filteredPeople = peopleArr.filter(
                 function (person) {
                     return (
-                        (this.state.currentSpec === "" ||
+                        (
+                            this.state.currentSpec === "" ||
                             person.spec === this.state.currentSpec)
                     );
                 }.bind(this)
@@ -313,6 +337,7 @@ class SpecPage extends Component{
     }
     render(){
         console.log('render');
+
         let o=1;
         return (
             <div id={"viewport"}>
@@ -324,7 +349,7 @@ class SpecPage extends Component{
                         <nav className="navbar navbar-default">
                             <div className="container-fluid">
                                 <ul className="nav navbar-nav navbar-right">
-                                    <Filter list={this.state.list} currentSpec={this.state.currentSpec} updateFormState={this.updateFormState} />
+                                    <Filter list={this.state.list} currentSpec={this.state.currentSpec} updateFormState={this.updateFromState} />
                                 </ul>
                             </div>
                         </nav>
@@ -342,8 +367,7 @@ class SpecPage extends Component{
                             <tbody>
                             {this.state.list.length > 0 &&
                             this.state.list.map((item,key) => (
-                                <PatientRow counter={o++} name={item.name} surname={item.surname} qNumber={item.qNumber} key={key} id={key} deleteItem={this.deleteItem.bind(this,key)}/>
-
+                                <PatientRow updateFormState={this.updateFromState} index={item.index} counter={o++} name={item.name} surname={item.surname} qNumber={item.qNumber} isServiced={item.isServiced} key={key} id={key} deleteItem={this.deleteItem.bind(this,key)} handleDoneCheck={this.handleDoneCheck.bind(this,item.index)}/>
                             ))
                             }
                             </tbody>
