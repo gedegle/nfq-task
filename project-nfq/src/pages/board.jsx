@@ -3,6 +3,7 @@ import React, {Component,  useState } from 'react';
 import '../board-style.css';
 import Table from "react-bootstrap/Table";
 //Functional Component
+
 class LightBoardPage extends Component{
     constructor(props){
         super(props);
@@ -19,7 +20,7 @@ class LightBoardPage extends Component{
         var data = localStorage.getItem('listCopy');
         if(data) {
             JSON.parse(localStorage.getItem('listCopy')).map((item) => {
-                if (i < 10) {
+                if (i < 10 && item.bool === false) {
 
                     console.log(item);
                     tempArr.push(item);
@@ -48,6 +49,7 @@ class LightBoardPage extends Component{
                     </li>
                     {this.state.list.length > 0 &&
                     this.state.list.map((item, index) => (
+
                     <li id={"list-"+o} key={index} className="table-row">
                         <div className="col col-1" data-label="#">{o++}</div>
                         <div className="col col-2" data-label="Specialistas">{item.spec}</div>
