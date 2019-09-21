@@ -5,7 +5,9 @@
     "name": "Joel",
     "surname": "Boswell",
         "spec": "Odontologas",
-    "bool": false
+    "bool": false,
+        "timeAdded": 2691005,
+        "timeDone": 4856985
     },
     {
     "index": 2,
@@ -13,7 +15,9 @@
     "name": "Lynn",
     "surname": "Gallagher",
         "spec": "Odontologas",
-    "bool": false
+    "bool": false,
+        "timeAdded": 3051000,
+        "timeDone": 5056985
     },
     {
     "index": 3,
@@ -21,7 +25,9 @@
     "name": "Glen",
     "surname": "Pearson",
         "spec": "Neurologas",
-    "bool": false
+    "bool": false,
+        "timeAdded": 4985000,
+        "timeDone": 7256985
     },
     {
     "index": 4,
@@ -29,7 +35,9 @@
     "name": "Paige",
     "surname": "Schultz",
         "spec": "Neurologas",
-    "bool": true
+    "bool": true,
+        "timeAdded": 6085000,
+        "timeDone": 9056985
     },
     {
     "index": 5,
@@ -37,7 +45,9 @@
     "name": "Florence",
     "surname": "Farmer",
         "spec": "Kardiologas",
-    "bool": false
+    "bool": false,
+        "timeAdded": 4885000,
+        "timeDone": 7006985
     },
     {
     "index": 6,
@@ -45,7 +55,9 @@
     "name": "Glenda",
     "surname": "Cassidy",
         "spec": "Ginekologas",
-    "bool": false
+    "bool": false,
+        "timeAdded": 3085000,
+        "timeDone": 3852585
     },
     {
     "index": 7,
@@ -53,7 +65,9 @@
     "name": "Marcus",
     "surname": "Clarke",
         "spec": "Šeimos gydytojas",
-    "bool": true
+    "bool": true,
+        "timeAdded": 2085000,
+        "timeDone": 3656085
     },
     {
     "index": 8,
@@ -61,7 +75,9 @@
     "name": "Ernest",
     "surname": "Aycock",
         "spec": "Odontologas",
-    "bool": false
+    "bool": false,
+        "timeAdded": 8085056,
+        "timeDone": 9822285
     },
     {
     "index": 9,
@@ -69,7 +85,9 @@
     "name": "Audrey",
     "surname": "Massey",
         "spec": "Odontologas",
-    "bool": false
+    "bool": false,
+        "timeAdded": 8585085,
+        "timeDone": 11856985
     },
 
   {
@@ -78,7 +96,9 @@
     "name": "Melisa",
     "surname": "Weed",
         "spec": "Psichologas",
-    "bool": false
+    "bool": false,
+      "timeAdded": 7625012,
+      "timeDone": 9856985
     },
   {
     "index": 10,
@@ -86,6 +106,8 @@
     "name": "Alison",
     "surname": "Butler",
     "spec": "Šeimos gydytojas",
-    "bool": false
+    "bool": false,
+      "timeAdded": 4085025,
+      "timeDone": 5265895
   }
 ]
