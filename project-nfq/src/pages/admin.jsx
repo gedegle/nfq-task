@@ -150,6 +150,7 @@ function SaveList(props) {
             peopleArr.push(item);
         })
         peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
+        peopleArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
         console.log(peopleArr);
         console.log(peopleArr.length);
         localStorage.setItem("listCopy", JSON.stringify(peopleArr));
@@ -172,11 +173,13 @@ class AdminPage extends Component{
             this.count = peopleArr[peopleArr.length-1].index;
         }
     }
+/*
 
     buildList =(data)=>{
         console.log(data);
         this.setState({list: data})
     }
+*/
 
     componentDidMount() {
         console.log('did mount')

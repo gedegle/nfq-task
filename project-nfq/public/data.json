@@ -21,7 +21,7 @@
     "name": "Glen",
     "surname": "Pearson",
         "spec": "Neurologas",
-    "bool": true
+    "bool": false
     },
     {
     "index": 4,
@@ -61,7 +61,7 @@
     "name": "Ernest",
     "surname": "Aycock",
         "spec": "Odontologas",
-    "bool": true
+    "bool": false
     },
     {
     "index": 9,
@@ -69,14 +69,23 @@
     "name": "Audrey",
     "surname": "Massey",
         "spec": "Odontologas",
-    "bool": true
+    "bool": false
     },
-    {
+
+  {
+    "index": 11,
+    "qNumber": 210,
+    "name": "Melisa",
+    "surname": "Weed",
+        "spec": "Psichologas",
+    "bool": false
+    },
+  {
     "index": 10,
     "qNumber": 210,
     "name": "Alison",
     "surname": "Butler",
-        "spec": "Šeimos gydytojas",
-    "bool": true
-    }
-    ]
+    "spec": "Šeimos gydytojas",
+    "bool": false
+  }
+]
