@@ -121,10 +121,13 @@ class AddNew extends Component{
                                     <Form.Label>Specialistas</Form.Label>
                                     <Form.Control as="select">
                                         <option>Pasirinkti...</option>
-                                        <option>Odontologas</option>
-                                        <option>Neurologas</option>
-                                        <option>Šeimos gydytojas</option>
-                                        <option>Kardiologas</option>
+                                        {window.SpecDirectory.specTypes.map(function(item) {
+                                            return (
+                                                <option value={item.display} key={item.key}>
+                                                    {item.display}
+                                                </option>
+                                            );
+                                        })}
                                     </Form.Control>
                                 </Form.Group>
                             </Form.Row>
