@@ -6,6 +6,7 @@ import Col from "react-bootstrap/Col";
 import $ from 'jquery';
 
 let peopleArr = [];
+let newArr = [];
 function SideBarNav(props){
     return (
         <div>
@@ -209,6 +210,7 @@ class SpecPage extends Component{
         }
         this.addNewPatient =this.addNewPatient.bind(this);
         this.updateFormState = this.updateFormState.bind(this);
+        this.updateLocalStorage = this.updateLocalStorage.bind(this);
 
         if(peopleArr.length <= 1){
             this.count = 1;
@@ -259,11 +261,26 @@ class SpecPage extends Component{
         });
 
     }
+
     deleteItem = indexToDelete => {
         this.setState(({ list }) => ({
-            list: list.filter((toDo, index) => index !== indexToDelete)
+            list: newArr = list.filter((toDo, index) => index !== indexToDelete)
+
         }));
     };
+    updateLocalStorage(){
+        const data = localStorage.getItem('listCopy');
+
+        newArr.map((item) => {
+            peopleArr.push(item);
+        })
+        peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
+        if(data){
+            localStorage.setItem('listCopy', JSON.stringify(peopleArr));
+        }
+//deletion from json here
+
+    }
     updateFormState(spec) {
         this.setState(spec, this.updatePeopleList);
     }
@@ -290,8 +307,6 @@ class SpecPage extends Component{
                 }.bind(this)
             );
         }
-
-
         this.setState({
             list: filteredPeople
         });
@@ -327,7 +342,8 @@ class SpecPage extends Component{
                             <tbody>
                             {this.state.list.length > 0 &&
                             this.state.list.map((item,key) => (
-                                <PatientRow counter={o++} name={item.name} surname={item.surname} qNumber={item.qNumber} key={key} id={key} deleteItem={this.deleteItem.bind(this,key)} />
+                                <PatientRow counter={o++} name={item.name} surname={item.surname} qNumber={item.qNumber} key={key} id={key} deleteItem={this.deleteItem.bind(this,key)}/>
+
                             ))
                             }
                             </tbody>
