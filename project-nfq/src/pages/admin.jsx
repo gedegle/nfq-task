@@ -5,7 +5,43 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import $ from 'jquery';
 
-let peopleArr = [];
+
+let peopleArr =  JSON.parse(localStorage.getItem('listCopy')) !== null ?  JSON.parse(localStorage.getItem('listCopy')) : [];
+export let peopleDoneArr = JSON.parse(localStorage.getItem('listDone')) !== null ?  JSON.parse(localStorage.getItem('listDone')) : [];
+export let peopleNotDoneArr = JSON.parse(localStorage.getItem('listDone')) !== null ?  JSON.parse(localStorage.getItem('listDone')) : [];
+let tempDate =new Date();
+//console.log(tempDate.getTime());
+function PatientRow(props) {
+        let o = 1;
+        if (props.listOfPeople.includes('<!DOCTYPE') || props.listOfPeople === null) {
+            return (
+                <p>Nepavyko nuskaityti lankytojų duomenų</p>
+            )
+        } else {
+            return (<table className="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Vardas</th>
+                        <th>Pavardė</th>
+                        <th>Eilės numeris</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {props.listOfPeople.length > 0 &&
+                    props.listOfPeople.map((item, key) => (
+                        <tr>
+                            <th key={item.key} id={item.id} scope={"row"}>{o++}</th>
+                            <td key={item.key} id={item.id}>{item.name}</td>
+                            <td key={item.key} id={item.id}>{item.surname}</td>
+                            <td key={item.key} id={item.id}>{item.qNumber}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            );
+        }
+}
 function SideBarNav(props){
     return (
       <div>
@@ -41,7 +77,7 @@ class AddNew extends Component{
             show: false,
             name:"",
             surname: "",
-            list: peopleArr
+            listOfPeople: peopleArr
         }
          this.handleNameChange = this.handleNameChange.bind(this);
          this.handleSurnameChange = this.handleSurnameChange.bind(this);
@@ -69,6 +105,7 @@ class AddNew extends Component{
          })
      }
      postPatient(evt){
+         var tempDate = new Date();
          evt.preventDefault();
          var newPatient = {
              index: this.count+1,
@@ -76,7 +113,8 @@ class AddNew extends Component{
              name: this.state.name,
              spec: this.state.type,
              surname: this.state.surname,
-             bool: false
+             bool: false,
+             timeAdded: tempDate.getHours()*3600+tempDate.getMinutes()*60+tempDate.getSeconds()
 
          };
          peopleArr.push(newPatient);
@@ -84,8 +122,13 @@ class AddNew extends Component{
          console.log(peopleArr);
          localStorage.setItem("listCopy", JSON.stringify(peopleArr));
          this.props.addNewPatient(newPatient);
+       //  this.postModal();
      }
-
+     postModal(evt){
+         evt.preventDefault();
+         document.getElementById("hide-this").style.display= 'none';
+         document.getElementById("add-new").innerText = "Užregistruota sėkmingai";
+     }
     render() {
         return (
             <div className="App">
@@ -101,17 +144,17 @@ class AddNew extends Component{
 
                 </button>
 
-                <Modal animation={false} onClose={this.showModal} show={this.state.show}>
+                <Modal animation={false} onClose={this.showModal} show={this.state.show} autoFocus={false}>
                     <Modal.Header >
                         <Modal.Title id="add-new">Pridėti pacientą</Modal.Title>
                         <Button variant="link" onClick={this.showModal}>X</Button>
                     </Modal.Header>
-                    <Modal.Body>
+                    <Modal.Body id="hide-this">
                         <Form>
                             <Form.Row>
                                 <Form.Group onChange={this.handleNameChange} as={Col} controlId="formGridState">
                                     <Form.Label>Vardas</Form.Label>
-                                    <Form.Control placeholder="Vardas"/>
+                                    <Form.Control autoFocus={true} placeholder="Vardas"/>
                                 </Form.Group>
                                 <Form.Group onChange={this.handleSurnameChange} as={Col} controlId="formGridState">
                                     <Form.Label>Pavardė</Form.Label>
@@ -146,14 +189,22 @@ function SaveList(props) {
 
     function saveToLocalStorage(evt) {
         evt.preventDefault();
-        props.list.map((item) => {
+        props.listOfPeople.map((item) => {
+            if(item.bool === false) {
+                peopleNotDoneArr.push(item);
+            }else {
+                peopleDoneArr.push(item);
+            }
             peopleArr.push(item);
+
         })
         peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
         peopleArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
         console.log(peopleArr);
         console.log(peopleArr.length);
         localStorage.setItem("listCopy", JSON.stringify(peopleArr));
+        localStorage.setItem("listNotDone", JSON.stringify(peopleNotDoneArr));
+        localStorage.setItem("listDone", JSON.stringify(peopleDoneArr));
     }
 
     return <button onClick={saveToLocalStorage} id="save">Išsaugoti sąrašą</button>;
@@ -162,10 +213,11 @@ class AdminPage extends Component{
     constructor(props){
         super(props);
         this.state = {
-            list: [],
+            listOfPeople: [],
             error: null
         }
         this.addNewPatient =this.addNewPatient.bind(this);
+
         if(peopleArr.length <= 1){
             this.count = 1;
         }
@@ -177,49 +229,47 @@ class AdminPage extends Component{
 
     buildList =(data)=>{
         console.log(data);
-        this.setState({list: data})
+        this.setState({listOfPeople: data})
     }
 */
-
     componentDidMount() {
         console.log('did mount')
         let url = './data.json';
         const data = localStorage.getItem('listCopy');
         if (!data) {
             $.get(url, (result) => {
-                this.setState({
-                    list: result,
-                });
-
+                    this.setState({
+                        listOfPeople: result,
+                    });
             });
         } else {
             this.setState({
-                list: JSON.parse(data)
+                listOfPeople: JSON.parse(data)
             });
         }
-    }
-        /*const data = localStorage.getItem('listCopy');
-        if(!data) {
-            fetch(url)
-                .then(response => response.json())
-                .then(this.buildList)
-                .catch(error => {
-                    this.setState({error});
-                })
-        }else {
-            this.setState({
-                list: JSON.parse(data)
-            })
+   // }
+        //const data = localStorage.getItem('listCopy');
+/*
+        fetch(url)
+            .then(response => response.json())
+            .then(this.buildList)
+            .catch(error => {
+                this.setState({error});
+            })*/
 
-    }
-}*/
+            /*this.setState({
+                list: JSON.parse(data)
+            })*/
+
+
+}
     addNewPatient(status){
-        var updatedPatientList =this.state.list.slice(0);
+        var updatedPatientList =this.state.listOfPeople.slice(0);
 
         updatedPatientList.push(status);
 
         this.setState({
-            list:updatedPatientList
+            listOfPeople:updatedPatientList
         });
 
     }
@@ -236,35 +286,14 @@ class AdminPage extends Component{
                         <nav className="navbar navbar-default">
                             <div className="container-fluid">
                                 <ul className="nav navbar-nav navbar-right">
-                                    <AddNew list={this.state.list} count={this.count} newName={this.newName} newSurname={this.newSurname} newType={this.newType} addNewPatient={this.addNewPatient}/>
-                                    <SaveList list={this.state.list}/>
+                                    <AddNew listOfPeople={this.state.listOfPeople} count={this.count} newName={this.newName} newSurname={this.newSurname} newType={this.newType} addNewPatient={this.addNewPatient}/>
+                                    <SaveList listOfPeople={this.state.listOfPeople}/>
                                 </ul>
                             </div>
                         </nav>
                     </div>
                     <div>
-                        <table className="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Vardas</th>
-                                <th>Pavardė</th>
-                                <th>Eilės numeris</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {this.state.list.length > 0 &&
-                            this.state.list.map((item) => (
-                                <tr>
-                                    <th key={item.id} id={item.id} scope={"row"}>{o++}</th>
-                                    <td key={item.id} id={item.id}>{item.name}</td>
-                                    <td key={item.id} id={item.id}>{item.surname}</td>
-                                    <td key={item.id} id={item.id}>{item.qNumber}</td>
-                                </tr>
-                            ))
-                            }
-                            </tbody>
-                        </table>
+                       <PatientRow listOfPeople={this.state.listOfPeople}/>
                         {this.state.error &&
                         <h3>{this.state.error}</h3>
                         }

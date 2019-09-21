@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import $ from 'jquery';
 
-let peopleArr = [];
+import {peopleDoneArr, peopleNotDoneArr} from "./admin";
 let newArr = [];
 function SideBarNav(props){
     return (
@@ -38,13 +38,13 @@ function SaveList(props) {
 
     function saveToLocalStorage(evt) {
         evt.preventDefault();
-        props.list.map((item) => {
-            peopleArr.push(item);
+        props.listOfPeople.map((item) => {
+            peopleNotDoneArr.push(item);
         })
-        peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
-        console.log(peopleArr);
-        console.log(peopleArr.length);
-        localStorage.setItem("listCopy", JSON.stringify(peopleArr));
+        peopleNotDoneArr = peopleNotDoneArr.filter((el, i, peopleNotDoneArr) => i === peopleNotDoneArr.indexOf(el));
+        console.log(peopleNotDoneArr);
+        console.log(peopleNotDoneArr.length);
+        localStorage.setItem("listCopy", JSON.stringify(peopleNotDoneArr));
     }
 
     return <button onClick={saveToLocalStorage} id="save">Išsaugoti sąrašą</button>;
@@ -85,7 +85,7 @@ class AddNew extends Component{
             show: false,
             name:"",
             surname: "",
-            list: peopleArr
+            listOfPeople: peopleNotDoneArr
         }
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleSurnameChange = this.handleSurnameChange.bind(this);
@@ -123,10 +123,10 @@ class AddNew extends Component{
             bool: false
 
         };
-        peopleArr.push(newPatient);
-        peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
-        console.log(peopleArr);
-        localStorage.setItem("listCopy", JSON.stringify(peopleArr));
+        peopleNotDoneArr.push(newPatient);
+        peopleNotDoneArr = peopleNotDoneArr.filter((el, i, peopleNotDoneArr) => i === peopleNotDoneArr.indexOf(el));
+        console.log(peopleNotDoneArr);
+        localStorage.setItem("listCopy", JSON.stringify(peopleNotDoneArr));
         this.props.addNewPatient(newPatient);
     }
 
@@ -203,7 +203,7 @@ class SpecPage extends Component{
     constructor(props){
         super(props);
         this.state = {
-            list: [],
+            listOfPeople: [],
             error: null,
             currentSpec: "",
             isServiced: false
@@ -211,32 +211,39 @@ class SpecPage extends Component{
         this.addNewPatient =this.addNewPatient.bind(this);
         this.updateFromState = this.updateFromState.bind(this);
 
-        if(peopleArr.length <= 1){
+        if(peopleNotDoneArr.length <= 1){
             this.count = 1;
         }
         else {
-            this.count = peopleArr[peopleArr.length-1].index;
+            this.count = peopleNotDoneArr[peopleNotDoneArr.length-1].index;
         }
     }
 
     buildList =(data)=>{
         console.log(data);
-        this.setState({list: data})
+        this.setState({listOfPeople: data})
     }
     componentDidMount() {
         console.log('did mount')
         let url = './data.json';
-        const data = localStorage.getItem('listCopy');
+        let tempArr = [];
+        let data = localStorage.getItem('listCopy');
         if (!data) {
             $.get(url, (result) => {
+                result.map((item)=>{
+                    if(item.bool === false) tempArr.push(item);
+                })
                 this.setState({
-                    list: result,
+                    listOfPeople: tempArr,
                 });
 
             });
         } else {
+            JSON.parse(data).map((item)=>{
+                if(item.bool === false) tempArr.push(item);
+            })
             this.setState({
-                list: JSON.parse(data)
+                listOfPeople: tempArr
             });
         }
  //   }
@@ -250,19 +257,19 @@ class SpecPage extends Component{
 */
 }
     addNewPatient(status){
-        var updatedPatientList =this.state.list.slice(0);
+        var updatedPatientList =this.state.listOfPeople.slice(0);
 
         updatedPatientList.push(status);
 
         this.setState({
-            list:updatedPatientList
+            listOfPeople:updatedPatientList
         });
 
     }
 
     deleteItem = indexToDelete => {
-        this.setState(({ list }) => ({
-            list: newArr = list.filter((people, index) => index !== indexToDelete)
+        this.setState(({ listOfPeople }) => ({
+            listOfPeople: newArr = listOfPeople.filter((people, index) => index !== indexToDelete)
         }));
 
 console.log(this.state)
@@ -273,34 +280,35 @@ console.log(this.state)
         const data = localStorage.getItem('listCopy');
 
         arr.map((item) => {
-            peopleArr.push(item);
+            peopleNotDoneArr.push(item);
         })
-        peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
+        peopleNotDoneArr = peopleNotDoneArr.filter((el, i, peopleNotDoneArr) => i === peopleNotDoneArr.indexOf(el));
         if(data){
-            localStorage.setItem('listCopy', JSON.stringify(peopleArr));
+            localStorage.setItem('listCopy', JSON.stringify(peopleNotDoneArr));
         }
 //deletion from json here
 
     }*/
     handleDoneCheck (index) {
-        let temp;
         let tempArr = [];
         const data = localStorage.getItem('listCopy');
 
-            this.state.list.map((item) => {
+            this.state.listOfPeople.map((item) => {
                 if (item.index === index) {
                     item.bool = true;
-                    temp = item;
-
+                    peopleDoneArr.push(item);
+                }else {
+                    tempArr.push(item);
                 }
-                tempArr.push(item);
+
 
             })
         if(data) {
             localStorage.setItem('listCopy',JSON.stringify(tempArr))
+            localStorage.setItem('listDone',JSON.stringify(peopleDoneArr))
         }
         this.setState({
-            list: tempArr
+            listOfPeople: tempArr
         })
     }
 
@@ -312,7 +320,7 @@ console.log(this.state)
         var filteredPeople;
         const data = localStorage.getItem('listCopy');
         if(!data) {
-            filteredPeople = peopleArr.filter(
+            filteredPeople = peopleNotDoneArr.filter(
                 function (person) {
                     return (
                         (
@@ -332,7 +340,7 @@ console.log(this.state)
             );
         }
         this.setState({
-            list: filteredPeople
+            listOfPeople: filteredPeople
         });
     }
     render(){
@@ -349,7 +357,7 @@ console.log(this.state)
                         <nav className="navbar navbar-default">
                             <div className="container-fluid">
                                 <ul className="nav navbar-nav navbar-right">
-                                    <Filter list={this.state.list} currentSpec={this.state.currentSpec} updateFormState={this.updateFromState} />
+                                    <Filter listOfPeople={this.state.listOfPeople} currentSpec={this.state.currentSpec} updateFormState={this.updateFromState} />
                                 </ul>
                             </div>
                         </nav>
@@ -365,8 +373,8 @@ console.log(this.state)
                             </tr>
                             </thead>
                             <tbody>
-                            {this.state.list.length > 0 &&
-                            this.state.list.map((item,key) => (
+                            {this.state.listOfPeople.length > 0 &&
+                            this.state.listOfPeople.map((item,key) => (
                                 <PatientRow updateFormState={this.updateFromState} index={item.index} counter={o++} name={item.name} surname={item.surname} qNumber={item.qNumber} isServiced={item.isServiced} key={key} id={key} deleteItem={this.deleteItem.bind(this,key)} handleDoneCheck={this.handleDoneCheck.bind(this,item.index)}/>
                             ))
                             }
