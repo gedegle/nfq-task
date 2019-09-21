@@ -6,6 +6,7 @@ import{ BrowserRouter as Router, Route, Switch, Link, Redirect} from 'react-rout
 import AdminPage from "./pages/admin";
 import LightBoardPage from "./pages/board";
 import SpecialistPage from "./pages/spec";
+import CountVisitTime from "./pages/user";
 
 class App extends Component {
     render(){
@@ -15,6 +16,7 @@ class App extends Component {
                     <Route exact path={"/"} component={AdminPage} />
                     <Route exact path={"/light-board"} component={LightBoardPage} />
                     <Route exact path={"/spec"} component={SpecialistPage} />
+                    <Route exact path={"/user"} component={CountVisitTime} />
                 </Switch>
             </Router>
         )

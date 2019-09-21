@@ -4,6 +4,7 @@ import { Button, ButtonToolbar, Modal } from 'react-bootstrap';
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import $ from 'jquery';
+import moment from "moment";
 
 
 let peopleArr =  JSON.parse(localStorage.getItem('listCopy')) !== null ?  JSON.parse(localStorage.getItem('listCopy')) : [];
@@ -83,6 +84,13 @@ class AddNew extends Component{
          this.handleSurnameChange = this.handleSurnameChange.bind(this);
          this.handleTypeChange = this.handleTypeChange.bind(this);
          this.postPatient = this.postPatient.bind(this);
+
+        if(peopleArr.length <= 1){
+            this.count = 1;
+        }
+        else {
+            this.count = peopleArr[peopleArr.length-1].index;
+        }
     }
     showModal = e => {
         this.setState({
@@ -105,7 +113,6 @@ class AddNew extends Component{
          })
      }
      postPatient(evt){
-         var tempDate = new Date();
          evt.preventDefault();
          var newPatient = {
              index: this.count+1,
@@ -114,9 +121,9 @@ class AddNew extends Component{
              spec: this.state.type,
              surname: this.state.surname,
              bool: false,
-             timeAdded: tempDate.getHours()*3600+tempDate.getMinutes()*60+tempDate.getSeconds()
+             timeAdded: moment().format('LTS')
 
-         };
+     };
          peopleArr.push(newPatient);
          peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
          console.log(peopleArr);
@@ -199,7 +206,11 @@ function SaveList(props) {
 
         })
         peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
+        peopleNotDoneArr = peopleNotDoneArr.filter((el, i, peopleNotDoneArr) => i === peopleNotDoneArr.indexOf(el));
+        peopleDoneArr = peopleDoneArr.filter((el, i, peopleArr) => i === peopleDoneArr.indexOf(el));
+
         peopleArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
+        peopleNotDoneArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
         console.log(peopleArr);
         console.log(peopleArr.length);
         localStorage.setItem("listCopy", JSON.stringify(peopleArr));
@@ -217,13 +228,6 @@ class AdminPage extends Component{
             error: null
         }
         this.addNewPatient =this.addNewPatient.bind(this);
-
-        if(peopleArr.length <= 1){
-            this.count = 1;
-        }
-        else {
-            this.count = peopleArr[peopleArr.length-1].index;
-        }
     }
 /*
 
@@ -286,7 +290,7 @@ class AdminPage extends Component{
                         <nav className="navbar navbar-default">
                             <div className="container-fluid">
                                 <ul className="nav navbar-nav navbar-right">
-                                    <AddNew listOfPeople={this.state.listOfPeople} count={this.count} newName={this.newName} newSurname={this.newSurname} newType={this.newType} addNewPatient={this.addNewPatient}/>
+                                    <AddNew listOfPeople={this.state.listOfPeople} newName={this.newName} newSurname={this.newSurname} newType={this.newType} addNewPatient={this.addNewPatient}/>
                                     <SaveList listOfPeople={this.state.listOfPeople}/>
                                 </ul>
                             </div>

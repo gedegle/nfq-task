@@ -6,8 +6,8 @@
     "surname": "Boswell",
         "spec": "Odontologas",
     "bool": false,
-        "timeAdded": 2691005,
-        "timeDone": 4856985
+        "timeAdded": "10:12",
+        "timeDone": "11:02"
     },
     {
     "index": 2,
@@ -16,8 +16,8 @@
     "surname": "Gallagher",
         "spec": "Odontologas",
     "bool": false,
-        "timeAdded": 3051000,
-        "timeDone": 5056985
+        "timeAdded": "11:15",
+        "timeDone": "11:55"
     },
     {
     "index": 3,
@@ -26,8 +26,8 @@
     "surname": "Pearson",
         "spec": "Neurologas",
     "bool": false,
-        "timeAdded": 4985000,
-        "timeDone": 7256985
+        "timeAdded": "09:25",
+        "timeDone": "10:33"
     },
     {
     "index": 4,
@@ -36,8 +36,8 @@
     "surname": "Schultz",
         "spec": "Neurologas",
     "bool": true,
-        "timeAdded": 6085000,
-        "timeDone": 9056985
+        "timeAdded": "08:25",
+        "timeDone": "09:22"
     },
     {
     "index": 5,
@@ -46,8 +46,8 @@
     "surname": "Farmer",
         "spec": "Kardiologas",
     "bool": false,
-        "timeAdded": 4885000,
-        "timeDone": 7006985
+        "timeAdded": "08:02",
+        "timeDone": "08:33"
     },
     {
     "index": 6,
@@ -56,8 +56,8 @@
     "surname": "Cassidy",
         "spec": "Ginekologas",
     "bool": false,
-        "timeAdded": 3085000,
-        "timeDone": 3852585
+        "timeAdded": "11:12",
+        "timeDone": "11:44"
     },
     {
     "index": 7,
@@ -66,8 +66,8 @@
     "surname": "Clarke",
         "spec": "Šeimos gydytojas",
     "bool": true,
-        "timeAdded": 2085000,
-        "timeDone": 3656085
+        "timeAdded": "10:55",
+        "timeDone": "11:16"
     },
     {
     "index": 8,
@@ -76,8 +76,8 @@
     "surname": "Aycock",
         "spec": "Odontologas",
     "bool": false,
-        "timeAdded": 8085056,
-        "timeDone": 9822285
+        "timeAdded": "13:02",
+        "timeDone": "13:25"
     },
     {
     "index": 9,
@@ -86,8 +86,8 @@
     "surname": "Massey",
         "spec": "Odontologas",
     "bool": false,
-        "timeAdded": 8585085,
-        "timeDone": 11856985
+        "timeAdded": "13:55",
+        "timeDone": "14:40"
     },
 
   {
@@ -97,8 +97,8 @@
     "surname": "Weed",
         "spec": "Psichologas",
     "bool": false,
-      "timeAdded": 7625012,
-      "timeDone": 9856985
+      "timeAdded": "11:15",
+      "timeDone": "12:30"
     },
   {
     "index": 10,
@@ -107,7 +107,7 @@
     "surname": "Butler",
     "spec": "Šeimos gydytojas",
     "bool": false,
-      "timeAdded": 4085025,
-      "timeDone": 5265895
+      "timeAdded": "08:02",
+      "timeDone": "09:00"
   }
 ]
