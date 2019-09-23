@@ -1,9 +1,6 @@
-import React, {Component,  useState} from 'react';
+import React, {Component} from 'react';
 import '../app-style.css';
-import { Button, ButtonToolbar, Modal } from 'react-bootstrap';
-import Form from "react-bootstrap/Form";
-import Col from "react-bootstrap/Col";
-import $ from 'jquery';
+
 import * as moment from "moment";
 
 let peopleArr =  JSON.parse(localStorage.getItem('listCopy')) !== null ?  JSON.parse(localStorage.getItem('listCopy')) : [];
@@ -229,16 +226,6 @@ class SpecPage extends Component{
                 });
         }
     }
- //   }
-/*
-        fetch(url)
-            .then(response => response.json())
-            .then(this.buildList)
-            .catch(error => {
-                this.setState({error});
-            })
-*/
-
 
     deleteItem = indexToDelete => {
         this.setState(({ listOfPeople }) => ({
