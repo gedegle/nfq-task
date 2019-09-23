@@ -6,8 +6,7 @@
     "surname": "Boswell",
         "spec": "Odontologas",
     "bool": false,
-        "timeAdded": "10:12",
-        "timeDone": "11:02"
+        "timeAdded": "10:12"
     },
     {
     "index": 2,
@@ -16,8 +15,7 @@
     "surname": "Gallagher",
         "spec": "Odontologas",
     "bool": false,
-        "timeAdded": "11:15",
-        "timeDone": "11:55"
+        "timeAdded": "11:15"
     },
     {
     "index": 3,
@@ -26,8 +24,7 @@
     "surname": "Pearson",
         "spec": "Neurologas",
     "bool": false,
-        "timeAdded": "09:25",
-        "timeDone": "10:33"
+        "timeAdded": "09:25"
     },
     {
     "index": 4,
@@ -46,8 +43,7 @@
     "surname": "Farmer",
         "spec": "Kardiologas",
     "bool": false,
-        "timeAdded": "08:02",
-        "timeDone": "08:33"
+        "timeAdded": "08:02"
     },
     {
     "index": 6,
@@ -56,8 +52,7 @@
     "surname": "Cassidy",
         "spec": "Ginekologas",
     "bool": false,
-        "timeAdded": "11:12",
-        "timeDone": "11:44"
+        "timeAdded": "11:12"
     },
     {
     "index": 7,
@@ -76,8 +71,7 @@
     "surname": "Aycock",
         "spec": "Odontologas",
     "bool": false,
-        "timeAdded": "13:02",
-        "timeDone": "13:25"
+        "timeAdded": "13:02"
     },
     {
     "index": 9,
@@ -86,8 +80,7 @@
     "surname": "Massey",
         "spec": "Odontologas",
     "bool": false,
-        "timeAdded": "13:55",
-        "timeDone": "14:40"
+        "timeAdded": "13:55"
     },
 
   {
@@ -97,8 +90,7 @@
     "surname": "Weed",
         "spec": "Psichologas",
     "bool": false,
-      "timeAdded": "11:15",
-      "timeDone": "12:30"
+      "timeAdded": "11:15"
     },
   {
     "index": 10,
@@ -107,7 +99,6 @@
     "surname": "Butler",
     "spec": "Šeimos gydytojas",
     "bool": false,
-      "timeAdded": "08:02",
-      "timeDone": "09:00"
+      "timeAdded": "08:02"
   }
 ]

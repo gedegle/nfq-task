@@ -4,14 +4,119 @@ import { Button, ButtonToolbar, Modal } from 'react-bootstrap';
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import $ from 'jquery';
+import * as moment from "moment";
 
-import {peopleDoneArr, peopleNotDoneArr} from "./admin";
+let peopleArr =  JSON.parse(localStorage.getItem('listCopy')) !== null ?  JSON.parse(localStorage.getItem('listCopy')) : [];
+let peopleDoneArr = JSON.parse(localStorage.getItem('listDone')) !== null ?  JSON.parse(localStorage.getItem('listDone')) : [];
+let peopleNotDoneArr = JSON.parse(localStorage.getItem('listNotDone')) !== null ?  JSON.parse(localStorage.getItem('listNotDone')) : [];
+
 let newArr = [];
+
+function CalcTimeOnDone (array,array2){
+    let tempArr2 = [];
+    let tempArr = [];
+    let tempTimeDone = "00:00"
+    if(array2.length >= 0) {
+        array2.map((item) => {
+            window.SpecDirectory.specTypes.map((spec) => {
+                if (spec.key === item.spec.toLowerCase() && item.bool == true) {
+                    console.log(item)
+                    tempArr2.push({
+                        index: item.index,
+                        qNumber: item.qNumber,
+                        name: item.name,
+                        spec: item.spec,
+                        surname: item.surname,
+                        bool: item.bool,
+                        timeAdded: item.timeAdded,
+                        timeDone: moment().format("HH:mm"),
+                        timeLast: moment.utc(moment(moment().format("HH:mm"), "HH:mm").diff(moment(item.timeAdded, "HH:mm"))).format("HH:mm")
+                    })
+                    // console.log(tempArr2)
+                    tempArr.push({
+                        spec: spec.display,
+                        time: moment.utc(moment(moment().format("HH:mm"), "HH:mm").diff(moment(item.timeAdded, "HH:mm"))).format("HH:mm"),
+                        instances: 1,
+                        avgTime: 0
+                    })
+                }
+
+            })
+        })
+    }
+   console.log(tempArr);
+
+    localStorage.setItem('listDone',JSON.stringify(tempArr2));
+    console.log(tempArr2);
+    let tempArr3 = array.filter((el, i, tempArr2) => i === tempArr2.indexOf(el));
+
+
+    tempArr.map((item) => {
+        item.time = moment(item.time, "HH:mm").diff(moment().startOf("day"), "seconds");
+    })
+
+    const result = [...tempArr.reduce((r, o) => {
+        const key = o.spec;
+
+        const item = r.get(key) || Object.assign({}, o, {
+            time: 0,
+            instances: 0
+        });
+        item.time += o.time;
+        item.instances += o.instances;
+
+        return r.set(key, item);
+    }, new Map).values()];
+
+
+    result.map((item) => {
+        item.avgTime = moment.utc(moment.duration((item.time / item.instances), "seconds").asMilliseconds()).format("HH:mm")
+    })
+    console.log(result);
+    let tempTime = "00:00";
+    let temptemp=0;
+    peopleArr = tempArr3.concat(tempArr2);
+    let tempArr4 = [];
+    for(let i=0; i<peopleArr.length; i++) {
+        result.map((o => {
+            if (o.spec === peopleArr[i].spec) {
+                if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool !== true && peopleArr[i-1].bool !== true){
+                    let temptemp = moment(o.avgTime, "HH:mm").diff(moment().startOf("day"), "seconds");
+                    tempTime = moment.utc(moment.duration(temptemp*2, "seconds").asMilliseconds()).format("HH:mm")
+                    console.log(peopleArr[i].spec + " "+tempTime)
+                }else if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === true){
+                    tempTime = o.avgTime;
+                   // console.log("else if: "+peopleArr[i].spec+" "+tempTime);
+                }else{
+                    tempTime=o.avgTime;
+                }
+            }
+        }))
+        tempArr4.push({
+            index: peopleArr[i].index,
+            qNumber: peopleArr[i].qNumber,
+            name: peopleArr[i].name,
+            spec: peopleArr[i].spec,
+            surname: peopleArr[i].surname,
+            bool: peopleArr[i].bool,
+            timeAdded: peopleArr[i].timeAdded,
+            timeDone: peopleArr[i].timeDone,
+            timeLast: peopleArr[i].timeLast,
+            avgTime: tempTime
+        })
+    }
+    peopleArr = tempArr4;
+    peopleDoneArr = tempArr2;
+    tempArr3 =  tempArr4.filter(word => word.bool == false);
+    peopleNotDoneArr = tempArr3;
+    localStorage.setItem('listCopy',JSON.stringify(tempArr4));
+    localStorage.setItem('listNotDone',JSON.stringify(tempArr3));
+}
 function SideBarNav(props){
     return (
         <div>
             <header>
-                <a href="#">My App</a>
+                <a href="/">My App</a>
             </header>
             <ul className="nav">
                 <li>
@@ -29,32 +134,20 @@ function SideBarNav(props){
                         <i className="zmdi zmdi-widgets"></i> Specialisto puslapis
                     </a>
                 </li>
+                <li>
+                    <a href="/user">
+                        <i className="zmdi zmdi-widgets"></i> Lankytojo puslapis
+                    </a>
+                </li>
             </ul>
         </div>
     );
 }
 
-function SaveList(props) {
-
-    function saveToLocalStorage(evt) {
-        evt.preventDefault();
-        props.listOfPeople.map((item) => {
-            peopleNotDoneArr.push(item);
-        })
-        peopleNotDoneArr = peopleNotDoneArr.filter((el, i, peopleNotDoneArr) => i === peopleNotDoneArr.indexOf(el));
-        console.log(peopleNotDoneArr);
-        console.log(peopleNotDoneArr.length);
-        localStorage.setItem("listCopy", JSON.stringify(peopleNotDoneArr));
-    }
-
-    return <button onClick={saveToLocalStorage} id="save">Išsaugoti sąrašą</button>;
-}
-
 function Filter(props) {
     function updateSpec(evt) {
-        props.updateFormState({ currentSpec: evt.target.value });
+        props.updateFromState({ currentSpec: evt.target.value });
     }
-
     return (
         <div>
             <div className="group">
@@ -76,111 +169,6 @@ function Filter(props) {
             </div>
         </div>
     );
-}
-class AddNew extends Component{
-    constructor(props){
-        super(props);
-
-        this.state = {
-            show: false,
-            name:"",
-            surname: "",
-            listOfPeople: peopleNotDoneArr
-        }
-        this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleSurnameChange = this.handleSurnameChange.bind(this);
-        this.handleTypeChange = this.handleTypeChange.bind(this);
-        this.postPatient = this.postPatient.bind(this);
-    }
-    showModal = e => {
-        this.setState({
-            show: !this.state.show
-        });
-    };
-    handleNameChange(evt){
-        this.setState({
-            name: evt.target.value
-        })
-    }
-    handleSurnameChange(evt){
-        this.setState({
-            surname: evt.target.value
-        })
-    }
-    handleTypeChange(evt) {
-        this.setState({
-            type: evt.target.value
-        })
-    }
-    postPatient(evt){
-        evt.preventDefault();
-        var newPatient = {
-            index: this.count+1,
-            qNumber: Math.random(),
-            name: this.state.name,
-            spec: this.state.type,
-            surname: this.state.surname,
-            bool: false
-
-        };
-        peopleNotDoneArr.push(newPatient);
-        peopleNotDoneArr = peopleNotDoneArr.filter((el, i, peopleNotDoneArr) => i === peopleNotDoneArr.indexOf(el));
-        console.log(peopleNotDoneArr);
-        localStorage.setItem("listCopy", JSON.stringify(peopleNotDoneArr));
-        this.props.addNewPatient(newPatient);
-    }
-
-    render() {
-        return (
-            <div className="App">
-                <button
-                    className="toggle-button"
-                    id="centered-toggle-button"
-                    onClick={e => {
-                        this.showModal(e);
-                    }}
-                >
-                    {" "}
-                    show Modal{" "}
-
-                </button>
-
-                <Modal animation={false} onClose={this.showModal} show={this.state.show}>
-                    <Modal.Header >
-                        <Modal.Title id="add-new">Pridėti pacientą</Modal.Title>
-                        <Button variant="link" onClick={this.showModal}>X</Button>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form>
-                            <Form.Row>
-                                <Form.Group onChange={this.handleNameChange} as={Col} controlId="formGridState">
-                                    <Form.Label>Vardas</Form.Label>
-                                    <Form.Control placeholder="Vardas"/>
-                                </Form.Group>
-                                <Form.Group onChange={this.handleSurnameChange} as={Col} controlId="formGridState">
-                                    <Form.Label>Pavardė</Form.Label>
-                                    <Form.Control placeholder="Pavardė"/>
-                                </Form.Group>
-                                <Form.Group onChange={this.handleTypeChange} as={Col} controlId="formGridState">
-                                    <Form.Label>Specialistas</Form.Label>
-                                    <Form.Control as="select">
-                                        <option>Pasirinkti...</option>
-                                        <option>Odontologas</option>
-                                        <option>Neurologas</option>
-                                        <option>Šeimos gydytojas</option>
-                                        <option>Kardiologas</option>
-                                    </Form.Control>
-                                </Form.Group>
-                            </Form.Row>
-                            <Button onClose={this.showModal} onClick={this.postPatient} variant="primary" type="submit">
-                                Patvirtinti
-                            </Button>
-                        </Form>
-                    </Modal.Body>
-                </Modal>
-            </div>
-        );
-    }
 }
 
 function PatientRow (props){
@@ -208,7 +196,6 @@ class SpecPage extends Component{
             currentSpec: "",
             isServiced: false
         }
-        this.addNewPatient =this.addNewPatient.bind(this);
         this.updateFromState = this.updateFromState.bind(this);
 
         if(peopleNotDoneArr.length <= 1){
@@ -227,25 +214,13 @@ class SpecPage extends Component{
         console.log('did mount')
         let url = './data.json';
         let tempArr = [];
-        let data = localStorage.getItem('listCopy');
-        if (!data) {
-            $.get(url, (result) => {
-                result.map((item)=>{
-                    if(item.bool === false) tempArr.push(item);
-                })
+        let data = localStorage.getItem('listNotDone');
+        if (data) {
                 this.setState({
-                    listOfPeople: tempArr,
+                    listOfPeople: JSON.parse(data)
                 });
-
-            });
-        } else {
-            JSON.parse(data).map((item)=>{
-                if(item.bool === false) tempArr.push(item);
-            })
-            this.setState({
-                listOfPeople: tempArr
-            });
         }
+    }
  //   }
 /*
         fetch(url)
@@ -255,17 +230,7 @@ class SpecPage extends Component{
                 this.setState({error});
             })
 */
-}
-    addNewPatient(status){
-        var updatedPatientList =this.state.listOfPeople.slice(0);
 
-        updatedPatientList.push(status);
-
-        this.setState({
-            listOfPeople:updatedPatientList
-        });
-
-    }
 
     deleteItem = indexToDelete => {
         this.setState(({ listOfPeople }) => ({
@@ -290,23 +255,25 @@ console.log(this.state)
 
     }*/
     handleDoneCheck (index) {
-        let tempArr = [];
+        let tempArr = [],
+            tempArr2 = [];
         const data = localStorage.getItem('listCopy');
 
-            this.state.listOfPeople.map((item) => {
-                if (item.index === index) {
-                    item.bool = true;
-                    peopleDoneArr.push(item);
-                }else {
-                    tempArr.push(item);
-                }
-
-
-            })
+        this.state.listOfPeople.map((item) => {
+            if (item.index === index) {
+                item.bool = true;
+                peopleDoneArr.push(item);
+            } else {
+                tempArr.push(item);
+            }
+        })
+        tempArr2 = peopleDoneArr.concat(tempArr)
+        //console.log(tempArr2)
         if(data) {
-            localStorage.setItem('listCopy',JSON.stringify(tempArr))
+            localStorage.setItem('listNotDone',JSON.stringify(tempArr))
             localStorage.setItem('listDone',JSON.stringify(peopleDoneArr))
         }
+        CalcTimeOnDone(tempArr,tempArr2);
         this.setState({
             listOfPeople: tempArr
         })
@@ -316,15 +283,13 @@ console.log(this.state)
         this.setState(spec, this.updatePeopleList);
     }
     updatePeopleList() {
-
         var filteredPeople;
-        const data = localStorage.getItem('listCopy');
+        const data = localStorage.getItem('listNotDone');
         if(!data) {
             filteredPeople = peopleNotDoneArr.filter(
                 function (person) {
                     return (
-                        (
-                            this.state.currentSpec === "" ||
+                        (   this.state.currentSpec === "" ||
                             person.spec === this.state.currentSpec)
                     );
                 }.bind(this)
@@ -357,7 +322,7 @@ console.log(this.state)
                         <nav className="navbar navbar-default">
                             <div className="container-fluid">
                                 <ul className="nav navbar-nav navbar-right">
-                                    <Filter listOfPeople={this.state.listOfPeople} currentSpec={this.state.currentSpec} updateFormState={this.updateFromState} />
+                                    <Filter listOfPeople={this.state.listOfPeople} currentSpec={this.state.currentSpec} updateFromState={this.updateFromState} />
                                 </ul>
                             </div>
                         </nav>
@@ -375,7 +340,7 @@ console.log(this.state)
                             <tbody>
                             {this.state.listOfPeople.length > 0 &&
                             this.state.listOfPeople.map((item,key) => (
-                                <PatientRow updateFormState={this.updateFromState} index={item.index} counter={o++} name={item.name} surname={item.surname} qNumber={item.qNumber} isServiced={item.isServiced} key={key} id={key} deleteItem={this.deleteItem.bind(this,key)} handleDoneCheck={this.handleDoneCheck.bind(this,item.index)}/>
+                                <PatientRow updateFromState={this.updateFromState} index={item.index} counter={o++} name={item.name} surname={item.surname} qNumber={item.qNumber} isServiced={item.isServiced} key={key} id={key} handleDoneCheck={this.handleDoneCheck.bind(this,item.index)} updatePatient={this.updatePatient}/>
                             ))
                             }
                             </tbody>
