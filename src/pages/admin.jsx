@@ -154,6 +154,10 @@ function SideBarNav(props){
           </header>
           <ul className="nav">
               <li>
+                  <a href="/">
+                      <i className="zmdi zmdi-link"></i> Administracinis puslapis
+                  </a>
+              </li><li>
                   <a href="/light-board">
                       <i className="zmdi zmdi-link"></i> Švieslentė
                   </a>
