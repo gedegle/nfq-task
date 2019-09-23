@@ -1,24 +1,27 @@
 import React, {Component,  useState, useEffect } from 'react';
 import * as moment from 'moment/moment';
+import "../user-style.css";
 
 let temp = 6000;
 const endDate = moment().add(temp, 'seconds')
 function FindTime(props){
     return (
+        <div id="form-hide">
+            <label id="label-hide" className="label-main">Patikrinti savo laiką</label>
         <form id="find-form">
-            <div className="form-row">
-            <div className="form-row">
-                <div className="form-group col-md-6">
-                    <label htmlFor="inputCity">Eilės numeris</label>
-                    <input onChange={props.handleNumberChange} type="text" className="form-control" id="inputNumber"></input>
-                </div>
-            </div>
-            </div>
-            <button type="submit" onClick={props.findPatientTime} className="btn btn-primary">Sign in</button>
+            <label className="label-qNumber" htmlFor="inputQnumber">Eilės numeris</label>
+            <input onkeyup={props.handleNumberChange} type="text" className="input-form" id="inputNumber"></input>
+            <button type="submit" onClick={props.findPatientTime} className="btn-submit-number">Patvirtinti</button>
         </form>
+        </div>
     )
 }
-
+function DelayTime(props){
+    function onClickChange(){
+        document.getElementById("change").innerHTML = props.time;
+    }
+    return <button onClick={onClickChange} id="btn-later" type="submit" className="btn btn-primary">Pavėlinti</button>
+}
 function TimeCountDown(props){
     const [seconds, setSeconds] = useState(props.seconds);
     function secondsToHms(d) {
@@ -41,7 +44,7 @@ function TimeCountDown(props){
 
 
     return (
-            <p className="App-header">
+            <p id="change" className="App-header">
                 {secondsToHms(seconds)}
             </p>
     );
@@ -57,35 +60,23 @@ class UserBoard extends Component {
             numberAhead: 0,
             timeAhead: "",
             showResult: false,
-            hideForm: false
+            change: false,
+            found: false
         }
         this.handleNumberChange = this.handleNumberChange.bind(this);
+        this.handleOnDelay = this.handleOnDelay.bind(this);
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if(this.state.running !== prevState.running){
-            switch(this.state.running) {
-                case true:
-                    this.handleStart();
-            }
-        }
-    }
 
     handleNumberChange(evt) {
         this.setState({
             number: evt.target.value
         })
     }
-    hideOnClick(){
-       this.setState({
-           hideForm: true
-       })
-    }
-
     findPatientTime(evt){
         evt.preventDefault();
-        //this.hideOnClick(evt);
-        this.hideOnClick();
+        //this.hideOnClick();
+        document.getElementById("label-hide").style.display = "none";
         let tempList = this.state.listOfPeople;
         let number = parseInt(document.getElementById("inputNumber").value);
 
@@ -98,7 +89,8 @@ class UserBoard extends Component {
                             number: tempList[i].qNumber,
                             time: tempList[i].avgTime,
                             numberAhead: tempList[i + 1].qNumber,
-                            timeAhead: tempList[i + 1].avgTime
+                            timeAhead: tempList[i + 1].avgTime,
+                            found: false
                         })
                     } else {
                         console.log(tempList[i].qNumber)
@@ -107,37 +99,71 @@ class UserBoard extends Component {
                             time: tempList[i].avgTime,
                             numberAhead: 0,
                             timeAhead: "00:00",
-
+                            found: true
                         })
                     }
+
                 }
+            }
+            else{
+                this.setState({
+                    found:false
+                })
             }
             }
         this.displayOnClick();
-       // changeHTMLCountDown(this.state.time);
+        if(this.state.number === 0){
+            this.hideOnClick();
+            this.handleNotFund();
+        }
+
     };
     displayOnClick(){
         this.setState({
             showResult: true
         })
     }
-
+    hideOnClick(){
+        this.setState({
+            showResult: false
+        })
+    }
+    handleNotFund(){
+        this.setState({
+            found: true
+        })
+    }
+    handleOnDelay(){
+        this.setState({
+            change: true
+        })
+    }
     render() {
-        console.log(this.state)
+        console.log(this.state);
+        let timeNew = this.state.timeAhead;
+        let timeOld = this.state.time;
       //  console.log(moment().add(moment.utc(moment.duration(this.state.time, "seconds").asMilliseconds()).format("HH:mm"), 'seconds'))
         return (
             <div>
-                { this.state.showResult ? <div id="show-number" className="jumbotron jumbotron-fluid">
+                { this.state.showResult ?
+                    <div id="show-number" className="jumbotron jumbotron-fluid">
                     <div className="container">
                         <h1 className="display-4">Jūsų eilės numeris {this.state.number}</h1>
                         <div className="inline-show">
-                            <TimeCountDown seconds={moment(this.state.time, "HH:mm").diff(moment().startOf("day"), "seconds")}/>
-                            <p className="lead">Pavėlinti eilę </p>
-                            <button type="submit" className="btn btn-primary">Pavėlinti</button>
+                            <p className="lead2">Likęs laukti laikas </p>
+                            {
+                                this.state.change ?
+                                    <TimeCountDown seconds={moment(this.state.timeAhead, "HH:mm").diff(moment().startOf("day"), "seconds")}/> :
+                                    <TimeCountDown seconds={moment(this.state.time, "HH:mm").diff(moment().startOf("day"), "seconds")}/>
+                            }
+                            <button onClick={this.handleOnDelay} id="btn-later" type="submit" className="btn btn-primary">Pavėlinti</button>
                         </div>
                     </div>
-                </div> : null }
-                <FindTime hideOnClick={this.hideOnClick} handleNumberChange={this.handleNumberChange} findPatientTime={this.findPatientTime.bind(this)}/>
+                </div> :  this.state.found ? <div className="container">
+                    <h1 className="display-4">Tokio eilės numerio nėra</h1>
+                </div> : null}
+                <FindTime handleNumberChange={this.handleNumberChange} findPatientTime={this.findPatientTime.bind(this)}/>
+
             </div>
         )
     }

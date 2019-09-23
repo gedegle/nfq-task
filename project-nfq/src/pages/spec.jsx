@@ -10,6 +10,10 @@ let peopleArr =  JSON.parse(localStorage.getItem('listCopy')) !== null ?  JSON.p
 let peopleDoneArr = JSON.parse(localStorage.getItem('listDone')) !== null ?  JSON.parse(localStorage.getItem('listDone')) : [];
 let peopleNotDoneArr = JSON.parse(localStorage.getItem('listNotDone')) !== null ?  JSON.parse(localStorage.getItem('listNotDone')) : [];
 
+let boardPath = "/light-board";
+let specPath = "/spec";
+let userPath = "/user";
+let adminPath = "/";
 let newArr = [];
 
 function CalcTimeOnDone (array,array2){
@@ -80,14 +84,13 @@ function CalcTimeOnDone (array,array2){
     for(let i=0; i<peopleArr.length; i++) {
         result.map((o => {
             if (o.spec === peopleArr[i].spec) {
-                if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool !== true && peopleArr[i-1].bool !== true){
+                if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool == false && peopleArr[i-1].bool == false){
                     let temptemp = moment(o.avgTime, "HH:mm").diff(moment().startOf("day"), "seconds");
                     tempTime = moment.utc(moment.duration(temptemp*2, "seconds").asMilliseconds()).format("HH:mm")
                     console.log(peopleArr[i].spec + " "+tempTime)
                 }else if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === true){
                     tempTime = o.avgTime;
-                   // console.log("else if: "+peopleArr[i].spec+" "+tempTime);
-                }else{
+                }else if(i>0 && peopleArr[i].spec !== peopleArr[i-1].spec){
                     tempTime=o.avgTime;
                 }
             }
@@ -112,30 +115,33 @@ function CalcTimeOnDone (array,array2){
     localStorage.setItem('listCopy',JSON.stringify(tempArr4));
     localStorage.setItem('listNotDone',JSON.stringify(tempArr3));
 }
+function ChangeClass(){
+    if(window.location.pathname === specPath){
+        document.getElementById("spec-path").className = "spec-active"
+    }else if(window.location.pathname === adminPath) {
+        document.getElementById("admin-path").className = "admin-active"
+    }
+}
 function SideBarNav(props){
+    console.log(window.location.pathname)
     return (
-        <div>
-            <header>
-                <a href="/">My App</a>
+        <div className="navBar">
+            <header className="admin" id="admin-path">
+                <a href={adminPath}>My App</a>
             </header>
             <ul className="nav">
                 <li>
-                    <a href="/">
-                        <i className="zmdi zmdi-view-dashboard"></i> Paieška
-                    </a>
-                </li>
-                <li>
-                    <a href="/light-board">
+                    <a href={boardPath}>
                         <i className="zmdi zmdi-link"></i> Švieslentė
                     </a>
                 </li>
-                <li>
-                    <a href="/spec">
+                <li className="spec" id="spec-path">
+                    <a href={specPath}>
                         <i className="zmdi zmdi-widgets"></i> Specialisto puslapis
                     </a>
                 </li>
                 <li>
-                    <a href="/user">
+                    <a href={userPath}>
                         <i className="zmdi zmdi-widgets"></i> Lankytojo puslapis
                     </a>
                 </li>
@@ -151,13 +157,15 @@ function Filter(props) {
     return (
         <div>
             <div className="group">
-                <label htmlFor="person-title">Filtras</label>
+                <span className="glyphicon glyphicon-filter"></span>
                 <select
                     name="spec_title"
                     id="spec-title"
                     value={props.currentSpec}
                     onChange={updateSpec}>
-                    <option value="">- Pasirinkti -</option>
+                    <option value="">
+                        Filtras
+                    </option>
                     {window.SpecDirectory.specTypes.map(function(item) {
                         return (
                             <option value={item.display} key={item.key}>
@@ -181,7 +189,7 @@ function PatientRow (props){
                 {/*<td><button className="row-delete"
                             onClick={this.props.deleteItem}>Aptarnauta
                 </button></td>*/}
-                <td><button onClick={props.handleDoneCheck}>Aptarnauta</button>
+                <td><button className="glyphicon glyphicon-ok" id="served-btn" onClick={props.handleDoneCheck}></button>
                 </td>
             </tr>
 
@@ -320,7 +328,7 @@ console.log(this.state)
                 <div id="content">
                     <div>
                         <nav className="navbar navbar-default">
-                            <div className="container-fluid">
+                            <div className="container-fluid-spec">
                                 <ul className="nav navbar-nav navbar-right">
                                     <Filter listOfPeople={this.state.listOfPeople} currentSpec={this.state.currentSpec} updateFromState={this.updateFromState} />
                                 </ul>
@@ -331,10 +339,11 @@ console.log(this.state)
                         <table className="table table-hover">
                             <thead>
                             <tr>
-                                <th>#</th>
+                                <th>Nr.</th>
                                 <th>Vardas</th>
                                 <th>Pavardė</th>
                                 <th>Eilės numeris</th>
+                                <th>Aptarnauti</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -348,6 +357,7 @@ console.log(this.state)
                         {this.state.error &&
                         <h3>{this.state.error}</h3>
                         }
+
                     </div>
                 </div>
             </div>

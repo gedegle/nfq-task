@@ -1,0 +1,63 @@
+body {
+    overflow-x: hidden;
+    font-family: Muli, sans-serif;
+    font-size: 16px;
+}
+#find-form{
+    position: absolute;
+    display: inline-block;
+    width: 700px;
+    align-items: center;
+    left: 50%;
+    top:50%;
+    transform: translate(-50%,-50%);
+    font-size: 1.5em;
+}
+@media screen and (min-width: 671px) {
+    #find-form {
+        font-size: 1.5em;
+    }
+}
+@media screen and (max-width: 670px) {
+    #find-form {
+        font-size: 1em;
+        width: 500px;
+    }
+    .btn-submit-number{
+        transform: scale(0.9);
+    }
+}
+.label-qNumber{
+    color: #3d3f42;
+
+}
+.btn-submit-number{
+    background-color: #6087d2;
+    border-radius: 5px;
+    padding: 10px 25px;
+    color: #ECEFF1;
+}
+.input-form{
+    margin-left: 5%;
+    margin-right: 5%;
+    border: 1px solid #4a42b4;
+}
+.label-main{
+    position: absolute;
+    left: 50%;
+    top:20%;
+    transform: translate(-50%,-50%);
+    font-size: 2em;
+}
+
+/*container with time*/
+
+.container{
+    text-align: center;
+}
+
+#btn-later{
+   display: inline;
+    margin-bottom: -20px;
+    background-color: #1e1a42;
+}
