@@ -5,6 +5,10 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import $ from 'jquery';
 import moment from "moment";
+//-------if saving to backend server -------
+//import restApi from '';
+//-----------------------------------------------
+
 const randomInt = require('random-int');
 
 export let peopleArr =  JSON.parse(localStorage.getItem('listCopy')) !== null ?  JSON.parse(localStorage.getItem('listCopy')) : [];
@@ -54,6 +58,7 @@ function CalcTimeOnSave (props){
 
     localStorage.setItem('listDone',JSON.stringify(tempArr2));
     tempArr2 = [];
+    console.log(localStorage.getItem('listDone'))
     tempArr.map((item) => {
         item.time = moment(item.time, "HH:mm").diff(moment().startOf("day"), "seconds");
     })
@@ -86,7 +91,7 @@ function CalcTimeOnSave (props){
                 }else if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === true){
                     tempTime = o.avgTime;
                     console.log("else if: "+peopleArr[i].spec+" "+tempTime);
-                }else{
+                }else if(i>0 && peopleArr[i].spec !== peopleArr[i-1].spec){
                     tempTime=o.avgTime;
                 }
             }
@@ -122,7 +127,7 @@ function PatientRow(props) {
             return (<table className="table table-hover">
                     <thead>
                     <tr>
-                        <th>#</th>
+                        <th>Nr.</th>
                         <th>Vardas</th>
                         <th>Pavardė</th>
                         <th>Eilės numeris</th>
@@ -150,11 +155,6 @@ function SideBarNav(props){
               <a href="/">My App</a>
           </header>
           <ul className="nav">
-              <li>
-                  <a href="/">
-                      <i className="zmdi zmdi-view-dashboard"></i> Paieška
-                  </a>
-              </li>
               <li>
                   <a href="/light-board">
                       <i className="zmdi zmdi-link"></i> Švieslentė
@@ -232,18 +232,14 @@ class AddNew extends Component{
              bool: false,
              timeAdded: moment().format('LT')
      };
-         console.log(peopleNotDoneArr);
+         //console.log(localStorage.getItem(''));
+         peopleNotDoneArr = [];
+         peopleDoneArr = [];
          peopleArr.push(newPatient);
          peopleArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
 
          CalcTimeOnSave(this);
 
-        // console.log(peopleNotDoneArr);
-        // peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
-         //peopleNotDoneArr = peopleNotDoneArr.filter((el, i, peopleNotDoneArr) => i === peopleNotDoneArr.indexOf(el));
-     //    console.log(peopleNotDoneArr);
-
-      //   console.log(peopleNotDoneArr);
          FilterDoneNotDone(peopleArr,peopleDoneArr,peopleNotDoneArr);
 
          localStorage.setItem("listCopy", JSON.stringify(peopleArr));
@@ -256,18 +252,21 @@ class AddNew extends Component{
     render() {
         return (
 
-            <div className="App">
-                <button
-                    className="toggle-button"
-                    id="centered-toggle-button"
-                    onClick={e => {
-                        this.showModal(e);
-                    }}>
-                    {" "}
-                    show Modal{" "}
-
-                </button>
-
+            <div className="nav-top">
+                <div className="button-class">
+                    <div className="move-btn">
+                    <span className="glyphicon glyphicon-plus"></span>
+                    <button
+                        className="toggle-button"
+                        id="centered-toggle-button"
+                        onClick={e => {
+                            this.showModal(e);
+                        }}>
+                        {" "}
+                        Pridėti{" "}
+                    </button>
+                    </div>
+                </div>
                 <Modal animation={false} onClose={this.showModal} show={this.state.show} autoFocus={false}>
                     <Modal.Header >
                         <Modal.Title id="add-new">Pridėti pacientą</Modal.Title>
@@ -326,7 +325,12 @@ function SaveList(props) {
         localStorage.setItem("listDone", JSON.stringify(peopleDoneArr));
     }
 
-    return <button onClick={saveToLocalStorage} id="save">Išsaugoti sąrašą</button>;
+    return (
+        <span className="save-span">
+            <span className="glyphicon glyphicon-save"></span>
+            <button onClick={saveToLocalStorage} id="save">Išsaugoti sąrašą</button>
+        </span>
+    );
 }
 class AdminPage extends Component{
     constructor(props){
@@ -353,7 +357,21 @@ class AdminPage extends Component{
                 listOfPeople: JSON.parse(data)
             });
         }
-}
+}/*
+//-------if saving to backend server -------
+    onSubmit = (e) => {
+        e.preventDefault();
+
+        const data = this.state.listCopy;
+        restApi.post('/', data)
+            .then(res => {
+                // success
+            })
+            .catch(err => {
+                this.setState({ errorMessage: err });
+            });
+    };*/
+//----------------------------------------
 /*    updatePatient(result) {
         this.setState({
             listOfTimes: result
