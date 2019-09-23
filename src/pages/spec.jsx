@@ -123,16 +123,20 @@ function SideBarNav(props){
     console.log(window.location.pathname)
     return (
         <div className="navBar">
-            <header className="admin" id="admin-path">
-                <a href={adminPath}>My App</a>
+            <header id="menu">
+                Meniu
             </header>
             <ul className="nav">
                 <li>
+                    <a href={adminPath}>
+                        <i className="zmdi zmdi-link"></i> Administracinis puslapis
+                    </a>
+                </li><li>
                     <a href={boardPath}>
                         <i className="zmdi zmdi-link"></i> Švieslentė
                     </a>
                 </li>
-                <li className="spec" id="spec-path">
+                <li>
                     <a href={specPath}>
                         <i className="zmdi zmdi-widgets"></i> Specialisto puslapis
                     </a>
