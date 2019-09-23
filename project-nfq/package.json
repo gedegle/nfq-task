@@ -5,8 +5,10 @@
   "dependencies": {
     "moment": "^2.24.0",
     "moment-duration-format": "^2.3.2",
+    "random-int": "^2.0.1",
     "react": "^16.9.0",
     "react-bootstrap": "^1.0.0-beta.12",
+    "react-countdown-moment": "0.0.4",
     "react-dom": "^16.9.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.1.1"

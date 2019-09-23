@@ -1,17 +1,117 @@
 import React, {Component,  useState} from 'react';
 import '../app-style.css';
-import { Button, ButtonToolbar, Modal } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import $ from 'jquery';
 import moment from "moment";
+const randomInt = require('random-int');
 
-
-let peopleArr =  JSON.parse(localStorage.getItem('listCopy')) !== null ?  JSON.parse(localStorage.getItem('listCopy')) : [];
+export let peopleArr =  JSON.parse(localStorage.getItem('listCopy')) !== null ?  JSON.parse(localStorage.getItem('listCopy')) : [];
 export let peopleDoneArr = JSON.parse(localStorage.getItem('listDone')) !== null ?  JSON.parse(localStorage.getItem('listDone')) : [];
-export let peopleNotDoneArr = JSON.parse(localStorage.getItem('listDone')) !== null ?  JSON.parse(localStorage.getItem('listDone')) : [];
-let tempDate =new Date();
-//console.log(tempDate.getTime());
+export let peopleNotDoneArr = JSON.parse(localStorage.getItem('listNotDone')) !== null ?  JSON.parse(localStorage.getItem('listNotDone')) : [];
+function FilterDoneNotDone(arr1, arr2,arr3){
+    arr1.map((item)=>{
+        if(item.bool === true){
+            arr2.push(item);
+        }else {
+            arr3.push(item);
+        }
+    })
+}
+function CalcTimeOnSave (props){
+
+    let tempArr = [];
+    let tempArr2 = [];
+    let temp = peopleArr;
+    if(temp.length !== 0) {
+        temp.map((item) => {
+            window.SpecDirectory.specTypes.map((spec) => {
+                if (spec.key === item.spec.toLowerCase() && item.bool === true) {
+                    let subtr = moment.utc(moment(item.timeDone, "HH:mm").diff(moment(item.timeAdded, "HH:mm"))).format("HH:mm")
+                    tempArr.push({
+                        spec: spec.display,
+                        time: subtr,
+                        instances: 1,
+                        avgTime: 0
+                    })
+                    console.log(spec.display+" "+subtr);
+                    tempArr2.push({
+                        index: item.index,
+                        qNumber: item.qNumber,
+                        name: item.name,
+                        spec: item.spec,
+                        surname: item.surname,
+                        bool: item.bool,
+                        timeAdded: item.timeAdded,
+                        timeDone: item.timeDone,
+                        timeLast: subtr
+                    })
+                }
+            })
+        })
+    }
+
+    localStorage.setItem('listDone',JSON.stringify(tempArr2));
+    tempArr2 = [];
+    tempArr.map((item) => {
+        item.time = moment(item.time, "HH:mm").diff(moment().startOf("day"), "seconds");
+    })
+    const result = [...tempArr.reduce((r, o) => {
+        const key = o.spec;
+
+        const item = r.get(key) || Object.assign({}, o, {
+            time: 0,
+            instances: 0
+        });
+        item.time += o.time;
+        item.instances += o.instances;
+
+        return r.set(key, item);
+    }, new Map).values()];
+
+    result.map((item) => {
+        item.avgTime = moment.utc(moment.duration((item.time / item.instances), "seconds").asMilliseconds()).format("HH:mm")
+
+    })
+
+    for(let i=0; i<peopleArr.length; i++) {
+        let tempTime;
+        result.map((o => {
+            if (o.spec === peopleArr[i].spec) {
+                if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool !== true && peopleArr[i-1].bool !== true){
+                    let temptemp = moment(o.avgTime, "HH:mm").diff(moment().startOf("day"), "seconds");
+                    tempTime = moment.utc(moment.duration(temptemp*2, "seconds").asMilliseconds()).format("HH:mm")
+                    console.log(peopleArr[i].spec + " "+tempTime)
+                }else if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === true){
+                    tempTime = o.avgTime;
+                    console.log("else if: "+peopleArr[i].spec+" "+tempTime);
+                }else{
+                    tempTime=o.avgTime;
+                }
+            }
+        }))
+        tempArr2.push({
+            index: peopleArr[i].index,
+            qNumber: peopleArr[i].qNumber,
+            name: peopleArr[i].name,
+            spec: peopleArr[i].spec,
+            surname: peopleArr[i].surname,
+            bool: peopleArr[i].bool,
+            timeAdded: peopleArr[i].timeAdded,
+            timeDone: peopleArr[i].timeDone,
+            timeLast: peopleArr[i].timeLast,
+            avgTime: tempTime
+        })
+    }
+    console.log(tempArr2);
+
+    peopleArr = tempArr2;
+    localStorage.setItem('listCopy',JSON.stringify(peopleArr));
+    //localStorage.setItem('timeList',JSON.stringify(result));
+    //props.updatePatient(peopleArr);
+
+}
 function PatientRow(props) {
         let o = 1;
         if (props.listOfPeople.includes('<!DOCTYPE') || props.listOfPeople === null) {
@@ -47,7 +147,7 @@ function SideBarNav(props){
     return (
       <div>
           <header>
-              <a href="#">My App</a>
+              <a href="/">My App</a>
           </header>
           <ul className="nav">
               <li>
@@ -65,11 +165,15 @@ function SideBarNav(props){
                       <i className="zmdi zmdi-widgets"></i> Specialisto puslapis
                   </a>
               </li>
+              <li>
+                  <a href="/user">
+                      <i className="zmdi zmdi-widgets"></i> Lankytojo puslapis
+                  </a>
+              </li>
           </ul>
       </div>
     );
 }
-
 class AddNew extends Component{
     constructor(props){
         super(props);
@@ -114,38 +218,51 @@ class AddNew extends Component{
      }
      postPatient(evt){
          evt.preventDefault();
+         let qNum=randomInt(1,500);
+         while(this.state.listOfPeople.includes(qNum)){
+             qNum=randomInt(1,500);
+         }
          var newPatient = {
+             avgTime: "00:00",
              index: this.count+1,
-             qNumber: Math.random(),
+             qNumber: qNum,
              name: this.state.name,
              spec: this.state.type,
              surname: this.state.surname,
              bool: false,
-             timeAdded: moment().format('LTS')
-
+             timeAdded: moment().format('LT')
      };
+         console.log(peopleNotDoneArr);
          peopleArr.push(newPatient);
-         peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
-         console.log(peopleArr);
+         peopleArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
+
+         CalcTimeOnSave(this);
+
+        // console.log(peopleNotDoneArr);
+        // peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
+         //peopleNotDoneArr = peopleNotDoneArr.filter((el, i, peopleNotDoneArr) => i === peopleNotDoneArr.indexOf(el));
+     //    console.log(peopleNotDoneArr);
+
+      //   console.log(peopleNotDoneArr);
+         FilterDoneNotDone(peopleArr,peopleDoneArr,peopleNotDoneArr);
+
          localStorage.setItem("listCopy", JSON.stringify(peopleArr));
-         this.props.addNewPatient(newPatient);
-       //  this.postModal();
-     }
-     postModal(evt){
-         evt.preventDefault();
-         document.getElementById("hide-this").style.display= 'none';
-         document.getElementById("add-new").innerText = "Užregistruota sėkmingai";
+         localStorage.setItem("listNotDone", JSON.stringify(peopleNotDoneArr));
+         localStorage.setItem("listDone", JSON.stringify(peopleDoneArr));
+
+     //    this.props.addNewPatient(newPatient);
+
      }
     render() {
         return (
+
             <div className="App">
                 <button
                     className="toggle-button"
                     id="centered-toggle-button"
                     onClick={e => {
                         this.showModal(e);
-                    }}
-                >
+                    }}>
                     {" "}
                     show Modal{" "}
 
@@ -196,23 +313,14 @@ function SaveList(props) {
 
     function saveToLocalStorage(evt) {
         evt.preventDefault();
-        props.listOfPeople.map((item) => {
-            if(item.bool === false) {
-                peopleNotDoneArr.push(item);
-            }else {
-                peopleDoneArr.push(item);
-            }
-            peopleArr.push(item);
-
-        })
-        peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
-        peopleNotDoneArr = peopleNotDoneArr.filter((el, i, peopleNotDoneArr) => i === peopleNotDoneArr.indexOf(el));
-        peopleDoneArr = peopleDoneArr.filter((el, i, peopleArr) => i === peopleDoneArr.indexOf(el));
-
+        peopleArr = props.listOfPeople;
         peopleArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
-        peopleNotDoneArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
-        console.log(peopleArr);
-        console.log(peopleArr.length);
+
+        CalcTimeOnSave(props);
+        peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
+
+       // peopleArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
+        FilterDoneNotDone(peopleArr,peopleDoneArr,peopleNotDoneArr);
         localStorage.setItem("listCopy", JSON.stringify(peopleArr));
         localStorage.setItem("listNotDone", JSON.stringify(peopleNotDoneArr));
         localStorage.setItem("listDone", JSON.stringify(peopleDoneArr));
@@ -228,14 +336,8 @@ class AdminPage extends Component{
             error: null
         }
         this.addNewPatient =this.addNewPatient.bind(this);
+       // this.updatePatient =this.updatePatient.bind(this);
     }
-/*
-
-    buildList =(data)=>{
-        console.log(data);
-        this.setState({listOfPeople: data})
-    }
-*/
     componentDidMount() {
         console.log('did mount')
         let url = './data.json';
@@ -251,22 +353,12 @@ class AdminPage extends Component{
                 listOfPeople: JSON.parse(data)
             });
         }
-   // }
-        //const data = localStorage.getItem('listCopy');
-/*
-        fetch(url)
-            .then(response => response.json())
-            .then(this.buildList)
-            .catch(error => {
-                this.setState({error});
-            })*/
-
-            /*this.setState({
-                list: JSON.parse(data)
-            })*/
-
-
 }
+/*    updatePatient(result) {
+        this.setState({
+            listOfTimes: result
+        });
+    }*/
     addNewPatient(status){
         var updatedPatientList =this.state.listOfPeople.slice(0);
 
@@ -291,7 +383,7 @@ class AdminPage extends Component{
                             <div className="container-fluid">
                                 <ul className="nav navbar-nav navbar-right">
                                     <AddNew listOfPeople={this.state.listOfPeople} newName={this.newName} newSurname={this.newSurname} newType={this.newType} addNewPatient={this.addNewPatient}/>
-                                    <SaveList listOfPeople={this.state.listOfPeople}/>
+                                    <SaveList listOfPeople={this.state.listOfPeople} updatePatient={this.updatePatient} />
                                 </ul>
                             </div>
                         </nav>
