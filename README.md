@@ -1,4 +1,8 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Projektas buvo sukurtas naudojant [Create React App](https://github.com/facebook/create-react-app).
+## Kam skirtas 
+
+Tai yra **nfq** akademijos stojimo užduoties įgyvendinimas.
+Šis puslapis skirtas administruoti lankytojus (šiuo atveju - ligoninės pacientus) bei lankytojams stebėti, kiek reikia laukti iki priėjimo pas specialistą.
 
 ## Kaip veikia
 
@@ -30,3 +34,12 @@ lankytojui bus parodytas likęs laikas iki apsilankymo. Patarasis atnaujinamas k
 ## Išsaugojimas į backend serverį
 
 Admin puslapio kode yra užkomentuotas išsaugojimas į backend serverį.
+
+##Projektas sukurtas naudojant
+
+`react-create-app`
+`bootstrap`
+`react-bootstrap`
+
+
+
