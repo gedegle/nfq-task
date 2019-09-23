@@ -113,8 +113,6 @@ function CalcTimeOnSave (props){
 
     peopleArr = tempArr2;
     localStorage.setItem('listCopy',JSON.stringify(peopleArr));
-    //localStorage.setItem('timeList',JSON.stringify(result));
-    //props.updatePatient(peopleArr);
 
 }
 function PatientRow(props) {
@@ -246,7 +244,6 @@ class AddNew extends Component{
          localStorage.setItem("listNotDone", JSON.stringify(peopleNotDoneArr));
          localStorage.setItem("listDone", JSON.stringify(peopleDoneArr));
 
-     //    this.props.addNewPatient(newPatient);
 
      }
     render() {
@@ -314,11 +311,11 @@ function SaveList(props) {
         evt.preventDefault();
         peopleArr = props.listOfPeople;
         peopleArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
-
+        peopleNotDoneArr = [];
+        peopleDoneArr = [];
         CalcTimeOnSave(props);
         peopleArr = peopleArr.filter((el, i, peopleArr) => i === peopleArr.indexOf(el));
 
-       // peopleArr.sort((a, b) => (a.spec > b.spec) ? 1 : (a.spec === b.spec) ? ((a.qNumber > b.qNumber) ? 1 : -1) : -1 )
         FilterDoneNotDone(peopleArr,peopleDoneArr,peopleNotDoneArr);
         localStorage.setItem("listCopy", JSON.stringify(peopleArr));
         localStorage.setItem("listNotDone", JSON.stringify(peopleNotDoneArr));
@@ -372,11 +369,6 @@ class AdminPage extends Component{
             });
     };*/
 //----------------------------------------
-/*    updatePatient(result) {
-        this.setState({
-            listOfTimes: result
-        });
-    }*/
     addNewPatient(status){
         var updatedPatientList =this.state.listOfPeople.slice(0);
 

@@ -75,7 +75,7 @@ class UserBoard extends Component {
     }
     findPatientTime(evt){
         evt.preventDefault();
-        //this.hideOnClick();
+
         document.getElementById("label-hide").style.display = "none";
         let tempList = this.state.listOfPeople;
         let number = parseInt(document.getElementById("inputNumber").value);
@@ -140,9 +140,6 @@ class UserBoard extends Component {
     }
     render() {
         console.log(this.state);
-        let timeNew = this.state.timeAhead;
-        let timeOld = this.state.time;
-      //  console.log(moment().add(moment.utc(moment.duration(this.state.time, "seconds").asMilliseconds()).format("HH:mm"), 'seconds'))
         return (
             <div>
                 { this.state.showResult ?

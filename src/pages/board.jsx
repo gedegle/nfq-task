@@ -1,10 +1,7 @@
 /*index.jsx*/
-import React, {Component,  useState, useEffect, useRef} from 'react';
+import React, {Component} from 'react';
 import '../board-style.css';
-import Table from "react-bootstrap/Table";
-//Functional Component
-import {peopleDoneArr} from "./admin";
-import moment from "moment";
+
 
 class LightBoardPage extends Component{
     constructor(props){
@@ -28,13 +25,10 @@ class LightBoardPage extends Component{
                     i++;
                 }
             })
-            // this.setState({listOfPeople: JSON.parse(localStorage.getItem('listCopy'))});
             this.setState({
                 listOfPeople: tempArr
             })
         }
-       // localStorage.setItem('listDone',JSON.stringify(peopleDoneArr));
-        console.log(localStorage.getItem('listNotDone'))
     }
     findTime(spec){
         let time = "00:00"
