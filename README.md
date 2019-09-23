@@ -35,7 +35,7 @@ lankytojui bus parodytas likęs laikas iki apsilankymo. Patarasis atnaujinamas k
 
 Admin puslapio kode yra užkomentuotas išsaugojimas į backend serverį.
 
-##Projektas sukurtas naudojant
+## Projektas sukurtas naudojant
 
 `react-create-app`
 `bootstrap`
