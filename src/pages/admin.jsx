@@ -149,8 +149,8 @@ function PatientRow(props) {
 function SideBarNav(props){
     return (
       <div>
-          <header>
-              <a href="/">My App</a>
+          <header id="menu">
+              Meniu
           </header>
           <ul className="nav">
               <li>
