@@ -2,26 +2,24 @@ import React, {Component,  useState, useEffect } from 'react';
 import * as moment from 'moment/moment';
 import "../user-style.css";
 
-let temp = 6000;
-const endDate = moment().add(temp, 'seconds')
 function FindTime(props){
     return (
         <div id="form-hide">
             <label id="label-hide" className="label-main">Patikrinti savo laiką</label>
         <form id="find-form">
             <label className="label-qNumber" htmlFor="inputQnumber">Eilės numeris</label>
-            <input onkeyup={props.handleNumberChange} type="text" className="input-form" id="inputNumber"></input>
+            <input onKeyUp={props.handleNumberChange} type="text" className="input-form" id="inputNumber"></input>
             <button type="submit" onClick={props.findPatientTime} className="btn-submit-number">Patvirtinti</button>
         </form>
         </div>
     )
 }
-function DelayTime(props){
+/*function DelayTime(props){
     function onClickChange(){
         document.getElementById("change").innerHTML = props.time;
     }
     return <button onClick={onClickChange} id="btn-later" type="submit" className="btn btn-primary">Pavėlinti</button>
-}
+}*/
 function TimeCountDown(props){
     const [seconds, setSeconds] = useState(props.seconds);
     function secondsToHms(d) {

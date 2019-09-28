@@ -18,9 +18,8 @@ class LightBoardPage extends Component{
         let tempArr = [];
         var data = localStorage.getItem('listNotDone');
         if(data) {
-            JSON.parse(data).map((item) => {
+            JSON.parse(data).forEach(function(item){
                 if (i < 10) {
-                    console.log(item);
                     tempArr.push(item);
                     i++;
                 }
@@ -32,7 +31,7 @@ class LightBoardPage extends Component{
     }
     findTime(spec){
         let time = "00:00"
-        JSON.parse(localStorage.getItem('timeList')).map((item)=> {
+        JSON.parse(localStorage.getItem('timeList')).forEach(function(item){
             if (spec === item.spec) {
                 time = item.avgTime;
             }

@@ -1,4 +1,4 @@
-import React, {Component,  useState} from 'react';
+import React, {Component} from 'react';
 import '../app-style.css';
 import { Button, Modal } from 'react-bootstrap';
 import Form from "react-bootstrap/Form";
@@ -15,7 +15,7 @@ export let peopleArr =  JSON.parse(localStorage.getItem('listCopy')) !== null ? 
 export let peopleDoneArr = JSON.parse(localStorage.getItem('listDone')) !== null ?  JSON.parse(localStorage.getItem('listDone')) : [];
 export let peopleNotDoneArr = JSON.parse(localStorage.getItem('listNotDone')) !== null ?  JSON.parse(localStorage.getItem('listNotDone')) : [];
 function FilterDoneNotDone(arr1, arr2,arr3){
-    arr1.map((item)=>{
+    arr1.forEach(function(item){
         if(item.bool === true){
             arr2.push(item);
         }else {
@@ -29,17 +29,15 @@ function CalcTimeOnSave (props){
     let tempArr2 = [];
     let temp = peopleArr;
     if(temp.length !== 0) {
-        temp.map((item) => {
-            window.SpecDirectory.specTypes.map((spec) => {
+        temp.forEach(function(item){
+            window.SpecDirectory.specTypes.forEach(function(spec) {
                 if (spec.key === item.spec.toLowerCase() && item.bool === true) {
-                    let subtr = moment.utc(moment(item.timeDone, "HH:mm").diff(moment(item.timeAdded, "HH:mm"))).format("HH:mm")
                     tempArr.push({
                         spec: spec.display,
-                        time: subtr,
+                        time: moment.utc(moment(item.timeDone, "HH:mm").diff(moment(item.timeAdded, "HH:mm"))).format("HH:mm"),
                         instances: 1,
                         avgTime: 0
                     })
-                    console.log(spec.display+" "+subtr);
                     tempArr2.push({
                         index: item.index,
                         qNumber: item.qNumber,
@@ -49,17 +47,23 @@ function CalcTimeOnSave (props){
                         bool: item.bool,
                         timeAdded: item.timeAdded,
                         timeDone: item.timeDone,
-                        timeLast: subtr
+                        timeLast: moment.utc(moment(item.timeDone, "HH:mm").diff(moment(item.timeAdded, "HH:mm"))).format("HH:mm")
                     })
                 }
             })
         })
     }
-
+    console.log(tempArr2)
     localStorage.setItem('listDone',JSON.stringify(tempArr2));
+    tempArr2.forEach(function(a){
+        peopleArr.filter(item => item.name === a.name && item.surname === a.surname && item.qNumber === a.qNumber).forEach(function(o){
+            o.timeLast = a.timeLast;
+        })
+    })
+
     tempArr2 = [];
     console.log(localStorage.getItem('listDone'))
-    tempArr.map((item) => {
+    tempArr.forEach(function(item) {
         item.time = moment(item.time, "HH:mm").diff(moment().startOf("day"), "seconds");
     })
     const result = [...tempArr.reduce((r, o) => {
@@ -73,16 +77,16 @@ function CalcTimeOnSave (props){
         item.instances += o.instances;
 
         return r.set(key, item);
-    }, new Map).values()];
+    }, new Map()).values()];
 
-    result.map((item) => {
+    result.forEach(function(item){
         item.avgTime = moment.utc(moment.duration((item.time / item.instances), "seconds").asMilliseconds()).format("HH:mm")
 
     })
 
     for(let i=0; i<peopleArr.length; i++) {
         let tempTime;
-        result.map((o => {
+        result.forEach(function(o){
             if (o.spec === peopleArr[i].spec) {
                 if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool !== true && peopleArr[i-1].bool !== true){
                     let temptemp = moment(o.avgTime, "HH:mm").diff(moment().startOf("day"), "seconds");
@@ -92,10 +96,13 @@ function CalcTimeOnSave (props){
                     tempTime = o.avgTime;
                     console.log("else if: "+peopleArr[i].spec+" "+tempTime);
                 }else if(i>0 && peopleArr[i].spec !== peopleArr[i-1].spec){
-                    tempTime=o.avgTime;
+                    tempTime = o.avgTime;
+                }
+                else{
+                    tempTime = o.avgTime;
                 }
             }
-        }))
+        })
         tempArr2.push({
             index: peopleArr[i].index,
             qNumber: peopleArr[i].qNumber,
@@ -134,11 +141,11 @@ function PatientRow(props) {
                     <tbody>
                     {props.listOfPeople.length > 0 &&
                     props.listOfPeople.map((item, key) => (
-                        <tr>
-                            <th key={item.key} id={item.id} scope={"row"}>{o++}</th>
-                            <td key={item.key} id={item.id}>{item.name}</td>
-                            <td key={item.key} id={item.id}>{item.surname}</td>
-                            <td key={item.key} id={item.id}>{item.qNumber}</td>
+                        <tr key={key}>
+                            <th scope={"row"}>{o++}</th>
+                            <td>{item.name}</td>
+                            <td>{item.surname}</td>
+                            <td>{item.qNumber}</td>
                         </tr>
                     ))}
                     </tbody>
@@ -385,7 +392,6 @@ class AdminPage extends Component{
     }
     render(){
         console.log('render');
-        let o=0;
         return (
             <div id={"viewport"}>
                 <div id="sidebar">
