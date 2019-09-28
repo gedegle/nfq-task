@@ -1,7 +1,6 @@
-import React, {Component,  useState } from 'react';
-//import { Button, ButtonToolbar, Modal } from 'react-bootstrap';
+import React, {Component} from 'react';
 
-import{ BrowserRouter as Router, Route, Switch, Link, Redirect} from 'react-router-dom';
+import{ BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 
 import AdminPage from "./pages/admin";
 import LightBoardPage from "./pages/board";

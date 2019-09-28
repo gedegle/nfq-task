@@ -11,16 +11,15 @@ let boardPath = "/light-board";
 let specPath = "/spec";
 let userPath = "/user";
 let adminPath = "/";
-let newArr = [];
+//let newArr = [];
 
 function CalcTimeOnDone (array,array2){
     let tempArr2 = [];
     let tempArr = [];
-    let tempTimeDone = "00:00"
     if(array2.length >= 0) {
-        array2.map((item) => {
-            window.SpecDirectory.specTypes.map((spec) => {
-                if (spec.key === item.spec.toLowerCase() && item.bool == true) {
+        array2.forEach(function(item){
+            window.SpecDirectory.specTypes.forEach(function(spec){
+                if (spec.key === item.spec.toLowerCase() && item.bool === true) {
                     console.log(item)
                     tempArr2.push({
                         index: item.index,
@@ -52,7 +51,7 @@ function CalcTimeOnDone (array,array2){
     let tempArr3 = array.filter((el, i, tempArr2) => i === tempArr2.indexOf(el));
 
 
-    tempArr.map((item) => {
+    tempArr.forEach(function(item){
         item.time = moment(item.time, "HH:mm").diff(moment().startOf("day"), "seconds");
     })
 
@@ -67,21 +66,37 @@ function CalcTimeOnDone (array,array2){
         item.instances += o.instances;
 
         return r.set(key, item);
-    }, new Map).values()];
+    }, new Map()).values()];
 
 
-    result.map((item) => {
+    result.forEach(function(item) {
         item.avgTime = moment.utc(moment.duration((item.time / item.instances), "seconds").asMilliseconds()).format("HH:mm")
     })
     console.log(result);
     let tempTime = "00:00";
-    let temptemp=0;
     peopleArr = tempArr3.concat(tempArr2);
     let tempArr4 = [];
     for(let i=0; i<peopleArr.length; i++) {
-        result.map((o => {
+        result.forEach(function(o){
             if (o.spec === peopleArr[i].spec) {
-                if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool == false && peopleArr[i-1].bool == false){
+                if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === false && peopleArr[i-1].bool === false){
+                    let temptemp = moment(o.avgTime, "HH:mm").diff(moment().startOf("day"), "seconds");
+                    tempTime = moment.utc(moment.duration(temptemp*2, "seconds").asMilliseconds()).format("HH:mm")
+                    console.log(peopleArr[i].spec + " "+tempTime)
+                }else if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === true){
+                    tempTime = o.avgTime;
+                }else if(i>0 && peopleArr[i].spec !== peopleArr[i-1].spec){
+                    tempTime = o.avgTime;
+                }
+                else {
+                    tempTime = o.avgTime;
+                }
+            }
+        })
+        /*for(let i=0; i<peopleArr.length; i++) {
+        result.forEach(function(o){
+            if (o.spec === peopleArr[i].spec) {
+                if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === false && peopleArr[i-1].bool === false){
                     let temptemp = moment(o.avgTime, "HH:mm").diff(moment().startOf("day"), "seconds");
                     tempTime = moment.utc(moment.duration(temptemp*2, "seconds").asMilliseconds()).format("HH:mm")
                     console.log(peopleArr[i].spec + " "+tempTime)
@@ -91,7 +106,7 @@ function CalcTimeOnDone (array,array2){
                     tempTime=o.avgTime;
                 }
             }
-        }))
+        })*/
         tempArr4.push({
             index: peopleArr[i].index,
             qNumber: peopleArr[i].qNumber,
@@ -107,18 +122,18 @@ function CalcTimeOnDone (array,array2){
     }
     peopleArr = tempArr4;
     peopleDoneArr = tempArr2;
-    tempArr3 =  tempArr4.filter(word => word.bool == false);
+    tempArr3 =  tempArr4.filter(word => word.bool === false);
     peopleNotDoneArr = tempArr3;
     localStorage.setItem('listCopy',JSON.stringify(tempArr4));
     localStorage.setItem('listNotDone',JSON.stringify(tempArr3));
 }
-function ChangeClass(){
+/*function ChangeClass(){
     if(window.location.pathname === specPath){
         document.getElementById("spec-path").className = "spec-active"
     }else if(window.location.pathname === adminPath) {
         document.getElementById("admin-path").className = "admin-active"
     }
-}
+}*/
 function SideBarNav(props){
     console.log(window.location.pathname)
     return (
@@ -182,18 +197,17 @@ function Filter(props) {
 
 function PatientRow (props){
         return (
-            <tr>
-                <th key={props.key} id={props.id} scope={"row"}>{props.counter}</th>
-                <td key={props.key} id={props.id}>{props.name}</td>
-                <td key={props.key} id={props.id}>{props.surname}</td>
-                <td key={props.key} id={props.id}>{props.qNumber}</td>
+            <>
+                <th scope={"row"}>{props.counter}</th>
+                <td>{props.name}</td>
+                <td>{props.surname}</td>
+                <td>{props.qNumber}</td>
                 {/*<td><button className="row-delete"
                             onClick={this.props.deleteItem}>Aptarnauta
                 </button></td>*/}
                 <td><button className="glyphicon glyphicon-ok" id="served-btn" onClick={props.handleDoneCheck}></button>
                 </td>
-            </tr>
-
+                </>
         );
 }
 class SpecPage extends Component{
@@ -221,8 +235,7 @@ class SpecPage extends Component{
     }
     componentDidMount() {
         console.log('did mount')
-        let url = './data.json';
-        let tempArr = [];
+
         let data = localStorage.getItem('listNotDone');
         if (data) {
                 this.setState({
@@ -230,14 +243,14 @@ class SpecPage extends Component{
                 });
         }
     }
-
+/*
     deleteItem = indexToDelete => {
         this.setState(({ listOfPeople }) => ({
             listOfPeople: newArr = listOfPeople.filter((people, index) => index !== indexToDelete)
         }));
 
 console.log(this.state)
-    };
+    };*/
 
 /*
     updateLocalStorage(arr){
@@ -258,7 +271,7 @@ console.log(this.state)
             tempArr2 = [];
         const data = localStorage.getItem('listCopy');
 
-        this.state.listOfPeople.map((item) => {
+        this.state.listOfPeople.forEach(function(item){
             if (item.index === index) {
                 item.bool = true;
                 peopleDoneArr.push(item);
@@ -340,8 +353,10 @@ console.log(this.state)
                             <tbody>
                             {this.state.listOfPeople.length > 0 &&
                             this.state.listOfPeople.map((item,key) => (
-                                <PatientRow updateFromState={this.updateFromState} index={item.index} counter={o++} name={item.name} surname={item.surname} qNumber={item.qNumber} isServiced={item.isServiced} key={key} id={key} handleDoneCheck={this.handleDoneCheck.bind(this,item.index)} updatePatient={this.updatePatient}/>
-                            ))
+                                <tr key={key}>
+                                <PatientRow updateFromState={this.updateFromState} index={item.index} counter={o++} name={item.name} surname={item.surname} qNumber={item.qNumber} isServiced={item.isServiced} handleDoneCheck={this.handleDoneCheck.bind(this,item.index)} updatePatient={this.updatePatient}/>
+                                </tr>
+                                ))
                             }
                             </tbody>
                         </table>
