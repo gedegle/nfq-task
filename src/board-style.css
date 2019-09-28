@@ -1,6 +1,5 @@
 body {
     font-family: 'lato', sans-serif;
-    overflow: hidden;
     -webkit-overflow-scrolling: touch;
 }
 .container {
