@@ -5,6 +5,9 @@ import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
 import $ from 'jquery';
 import moment from "moment";
+import PropTypes from 'prop-types';
+import SideBarNav from "../SideBarNav";
+
 //-------if saving to backend server -------
 //import restApi from '';
 //-----------------------------------------------
@@ -23,7 +26,7 @@ function FilterDoneNotDone(arr1, arr2,arr3){
         }
     })
 }
-function CalcTimeOnSave (props){
+function CalcTimeOnSave (){
 
     let tempArr = [];
     let tempArr2 = [];
@@ -53,7 +56,6 @@ function CalcTimeOnSave (props){
             })
         })
     }
-    console.log(tempArr2)
     localStorage.setItem('listDone',JSON.stringify(tempArr2));
     tempArr2.forEach(function(a){
         peopleArr.filter(item => item.name === a.name && item.surname === a.surname && item.qNumber === a.qNumber).forEach(function(o){
@@ -62,7 +64,6 @@ function CalcTimeOnSave (props){
     })
 
     tempArr2 = [];
-    console.log(localStorage.getItem('listDone'))
     tempArr.forEach(function(item) {
         item.time = moment(item.time, "HH:mm").diff(moment().startOf("day"), "seconds");
     })
@@ -91,10 +92,10 @@ function CalcTimeOnSave (props){
                 if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool !== true && peopleArr[i-1].bool !== true){
                     let temptemp = moment(o.avgTime, "HH:mm").diff(moment().startOf("day"), "seconds");
                     tempTime = moment.utc(moment.duration(temptemp*2, "seconds").asMilliseconds()).format("HH:mm")
-                    console.log(peopleArr[i].spec + " "+tempTime)
+
                 }else if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === true){
                     tempTime = o.avgTime;
-                    console.log("else if: "+peopleArr[i].spec+" "+tempTime);
+
                 }else if(i>0 && peopleArr[i].spec !== peopleArr[i-1].spec){
                     tempTime = o.avgTime;
                 }
@@ -116,8 +117,6 @@ function CalcTimeOnSave (props){
             avgTime: tempTime
         })
     }
-    console.log(tempArr2);
-
     peopleArr = tempArr2;
     localStorage.setItem('listCopy',JSON.stringify(peopleArr));
 
@@ -153,40 +152,17 @@ function PatientRow(props) {
             );
         }
 }
-function SideBarNav(props){
-    return (
-      <div>
-          <header id="menu">
-              Meniu
-          </header>
-          <ul className="nav">
-              <li>
-                  <a href="/">
-                      <i className="zmdi zmdi-link"></i> Administracinis puslapis
-                  </a>
-              </li><li>
-                  <a href="/light-board">
-                      <i className="zmdi zmdi-link"></i> Švieslentė
-                  </a>
-              </li>
-              <li>
-                  <a href="/spec">
-                      <i className="zmdi zmdi-widgets"></i> Specialisto puslapis
-                  </a>
-              </li>
-              <li>
-                  <a href="/user">
-                      <i className="zmdi zmdi-widgets"></i> Lankytojo puslapis
-                  </a>
-              </li>
-          </ul>
-      </div>
-    );
-}
+
 class AddNew extends Component{
     constructor(props){
         super(props);
 
+        if(peopleArr.length>=1){
+            this.count = Math.max.apply(Math, peopleArr.map(function(o) { return o.index; })) +1;
+        }
+        else {
+            this.count = 1;
+        }
         this.state = {
             show: false,
             name:"",
@@ -198,14 +174,9 @@ class AddNew extends Component{
          this.handleTypeChange = this.handleTypeChange.bind(this);
          this.postPatient = this.postPatient.bind(this);
 
-        if(peopleArr.length <= 1){
-            this.count = 1;
-        }
-        else {
-            this.count = peopleArr[peopleArr.length-1].index;
-        }
     }
     showModal = e => {
+
         this.setState({
             show: !this.state.show
         });
@@ -225,6 +196,7 @@ class AddNew extends Component{
              type: evt.target.value
          })
      }
+
      postPatient(evt){
          evt.preventDefault();
          let qNum=randomInt(1,500);
@@ -233,7 +205,7 @@ class AddNew extends Component{
          }
          var newPatient = {
              avgTime: "00:00",
-             index: this.count+1,
+             index: this.count,
              qNumber: qNum,
              name: this.state.name,
              spec: this.state.type,
@@ -241,7 +213,6 @@ class AddNew extends Component{
              bool: false,
              timeAdded: moment().format('LT')
      };
-         //console.log(localStorage.getItem(''));
          peopleNotDoneArr = [];
          peopleDoneArr = [];
          peopleArr.push(newPatient);
@@ -254,13 +225,17 @@ class AddNew extends Component{
          localStorage.setItem("listCopy", JSON.stringify(peopleArr));
          localStorage.setItem("listNotDone", JSON.stringify(peopleNotDoneArr));
          localStorage.setItem("listDone", JSON.stringify(peopleDoneArr));
-
+         this.setState({
+             listOfPeople: peopleArr
+         })
+         this.props.updatePeopleList();
+         this.showModal();
 
      }
     render() {
         return (
 
-            <div className="nav-top">
+            <div className="nav-top" >
                 <div className="button-class">
                     <div className="move-btn">
                     <span className="glyphicon glyphicon-plus"></span>
@@ -275,7 +250,7 @@ class AddNew extends Component{
                     </button>
                     </div>
                 </div>
-                <Modal animation={false} onClose={this.showModal} show={this.state.show} autoFocus={false}>
+                <Modal onHide={this.showModal} animation={false} onClose={this.showModal} show={this.state.show} autoFocus={false}>
                     <Modal.Header >
                         <Modal.Title id="add-new">Pridėti pacientą</Modal.Title>
                         <Button variant="link" onClick={this.showModal}>X</Button>
@@ -289,12 +264,12 @@ class AddNew extends Component{
                                 </Form.Group>
                                 <Form.Group onChange={this.handleSurnameChange} as={Col} controlId="formGridState">
                                     <Form.Label>Pavardė</Form.Label>
-                                    <Form.Control placeholder="Pavardė"/>
+                                    <Form.Control disabled={!this.state.name} placeholder="Pavardė"/>
                                 </Form.Group>
                                 <Form.Group onChange={this.handleTypeChange} as={Col} controlId="formGridState">
                                     <Form.Label>Specialistas</Form.Label>
-                                    <Form.Control as="select">
-                                        <option>Pasirinkti...</option>
+                                    <Form.Control as="select" disabled={!(this.state.name && this.state.surname)}>
+                                        <option defaultValue="Pasirinkti...">Pasirinkti...</option>
                                         {window.SpecDirectory.specTypes.map(function(item) {
                                             return (
                                                 <option value={item.display} key={item.key}>
@@ -305,9 +280,11 @@ class AddNew extends Component{
                                     </Form.Control>
                                 </Form.Group>
                             </Form.Row>
-                            <Button onClose={this.showModal} onClick={this.postPatient} variant="primary" type="submit">
+                            {this.state.type === "Pasirinkti..." || !this.state.type ? <Button disabled onClose={this.showModal} onClick={this.postPatient} variant="primary" type="submit">
                                 Patvirtinti
-                            </Button>
+                            </Button> : <Button  onClose={this.showModal} onClick={this.postPatient} variant="primary" type="submit">
+                                Patvirtinti
+                            </Button>}
                         </Form>
                     </Modal.Body>
                 </Modal>
@@ -331,6 +308,7 @@ function SaveList(props) {
         localStorage.setItem("listCopy", JSON.stringify(peopleArr));
         localStorage.setItem("listNotDone", JSON.stringify(peopleNotDoneArr));
         localStorage.setItem("listDone", JSON.stringify(peopleDoneArr));
+        props.updatePeopleList();
     }
 
     return (
@@ -348,10 +326,9 @@ class AdminPage extends Component{
             error: null
         }
         this.addNewPatient =this.addNewPatient.bind(this);
-       // this.updatePatient =this.updatePatient.bind(this);
+        this.updatePeopleList =this.updatePeopleList.bind(this);
     }
     componentDidMount() {
-        console.log('did mount')
         let url = './data.json';
         const data = localStorage.getItem('listCopy');
         if (!data) {
@@ -390,25 +367,32 @@ class AdminPage extends Component{
         });
 
     }
+
+    updatePeopleList() {
+        const data = localStorage.getItem('listCopy');
+
+        this.setState({
+            listOfPeople: JSON.parse(data)
+        });
+    }
     render(){
-        console.log('render');
         return (
             <div id={"viewport"}>
                 <div id="sidebar">
                    <SideBarNav />
                 </div>
                 <div id="content">
-                    <div>
+                    <div id="navbar-noscroll">
                         <nav className="navbar navbar-default">
                             <div className="container-fluid">
                                 <ul className="nav navbar-nav navbar-right">
-                                    <AddNew listOfPeople={this.state.listOfPeople} newName={this.newName} newSurname={this.newSurname} newType={this.newType} addNewPatient={this.addNewPatient}/>
-                                    <SaveList listOfPeople={this.state.listOfPeople} updatePatient={this.updatePatient} />
+                                    <AddNew updatePeopleList={this.updatePeopleList} listOfPeople={this.state.listOfPeople} newName={this.newName} newSurname={this.newSurname} newType={this.newType} addNewPatient={this.addNewPatient}/>
+                                    <SaveList updatePeopleList={this.updatePeopleList} listOfPeople={this.state.listOfPeople} updatePatient={this.updatePatient} />
                                 </ul>
                             </div>
                         </nav>
                     </div>
-                    <div>
+                    <div id="scrollable-table">
                        <PatientRow listOfPeople={this.state.listOfPeople}/>
                         {this.state.error &&
                         <h3>{this.state.error}</h3>
@@ -420,3 +404,16 @@ class AdminPage extends Component{
     }
 }
 export default AdminPage;
+
+PatientRow.propTypes = {
+  listOfPeople: PropTypes.any
+}
+
+SaveList.propTypes = {
+  listOfPeople: PropTypes.any,
+  updatePeopleList: PropTypes.func
+}
+
+AddNew.propTypes = {
+  updatePeopleList: PropTypes.func
+}

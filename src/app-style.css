@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
 
 body {
-    overflow-x: hidden;
     font-family: Muli, sans-serif;
     font-size: 16px;
 }
@@ -18,6 +17,7 @@ a:active{
     -o-transition: all 0.5s ease;
     transition: all 0.5s ease;
     font-family: Muli, sans-serif;
+
 }
 
 #content {
@@ -184,8 +184,11 @@ button{
 }
 .nav-top{
     display: inline-block;
-}
 
+}
+table{
+    overflow:auto;
+}
 .save-span{
     margin-left: 20px;
     display: inline-block;

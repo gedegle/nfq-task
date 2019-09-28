@@ -1,6 +1,7 @@
 import React, {Component,  useState, useEffect } from 'react';
 import * as moment from 'moment/moment';
 import "../user-style.css";
+import PropTypes from 'prop-types';
 
 function FindTime(props){
     return (
@@ -46,7 +47,7 @@ function TimeCountDown(props){
                 {secondsToHms(seconds)}
             </p>
     );
-};
+}
 class UserBoard extends Component {
     constructor(props) {
         super(props);
@@ -82,7 +83,6 @@ class UserBoard extends Component {
             if(tempList[i].qNumber === number) {
                 if (i < tempList.length) {
                     if (tempList[i].spec.indexOf(tempList[i + 1].spec) >= 0) {
-                        console.log(tempList[i].spec + " " + tempList[i + 1].spec)
                         this.setState({
                             number: tempList[i].qNumber,
                             time: tempList[i].avgTime,
@@ -91,7 +91,6 @@ class UserBoard extends Component {
                             found: false
                         })
                     } else {
-                        console.log(tempList[i].qNumber)
                         this.setState({
                             number: tempList[i].qNumber,
                             time: tempList[i].avgTime,
@@ -114,8 +113,7 @@ class UserBoard extends Component {
             this.hideOnClick();
             this.handleNotFund();
         }
-
-    };
+    }
     displayOnClick(){
         this.setState({
             showResult: true
@@ -137,7 +135,6 @@ class UserBoard extends Component {
         })
     }
     render() {
-        console.log(this.state);
         return (
             <div>
                 { this.state.showResult ?
@@ -165,3 +162,12 @@ class UserBoard extends Component {
 }
 
 export default UserBoard;
+
+FindTime.propTypes = {
+  findPatientTime: PropTypes.func,
+  handleNumberChange: PropTypes.func
+}
+
+TimeCountDown.propTypes = {
+  seconds: PropTypes.number
+}

@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "eslint": "^6.4.0",
     "moment": "^2.24.0",
     "moment-duration-format": "^2.3.2",
     "npm": "^6.11.3",
+    "prop-types": "^15.7.2",
     "random-int": "^2.0.1",
     "react": "^16.9.0",
     "react-bootstrap": "^1.0.0-beta.12",
     "react-countdown-moment": "0.0.4",
     "react-dom": "^16.9.0",
+    "react-id-generator": "^2.0.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.1.1"
   },
@@ -18,7 +21,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint src/**/*.js src/**/*.jsx"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -36,6 +40,7 @@
     ]
   },
   "devDependencies": {
+    "eslint-plugin-react": "^7.14.3",
     "jquery": "^3.4.1"
   }
 }

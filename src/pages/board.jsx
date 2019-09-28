@@ -2,7 +2,6 @@
 import React, {Component} from 'react';
 import '../board-style.css';
 
-
 class LightBoardPage extends Component{
     constructor(props){
         super(props);
@@ -13,7 +12,6 @@ class LightBoardPage extends Component{
     }
 
     componentDidMount(){
-        console.log('did mount')
         let i=0;
         let tempArr = [];
         var data = localStorage.getItem('listNotDone');
@@ -39,7 +37,6 @@ class LightBoardPage extends Component{
         return time;
     }
     render(){
-        console.log('render');
         let o=1;
         return (
             <div className="container">

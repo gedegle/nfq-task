@@ -1,17 +1,12 @@
 import React, {Component} from 'react';
 import '../app-style.css';
-
+import PropTypes from 'prop-types';
 import * as moment from "moment";
+import SideBarNav from "../SideBarNav";
 
 let peopleArr =  JSON.parse(localStorage.getItem('listCopy')) !== null ?  JSON.parse(localStorage.getItem('listCopy')) : [];
 let peopleDoneArr = JSON.parse(localStorage.getItem('listDone')) !== null ?  JSON.parse(localStorage.getItem('listDone')) : [];
 let peopleNotDoneArr = JSON.parse(localStorage.getItem('listNotDone')) !== null ?  JSON.parse(localStorage.getItem('listNotDone')) : [];
-
-let boardPath = "/light-board";
-let specPath = "/spec";
-let userPath = "/user";
-let adminPath = "/";
-//let newArr = [];
 
 function CalcTimeOnDone (array,array2){
     let tempArr2 = [];
@@ -20,7 +15,6 @@ function CalcTimeOnDone (array,array2){
         array2.forEach(function(item){
             window.SpecDirectory.specTypes.forEach(function(spec){
                 if (spec.key === item.spec.toLowerCase() && item.bool === true) {
-                    console.log(item)
                     tempArr2.push({
                         index: item.index,
                         qNumber: item.qNumber,
@@ -32,7 +26,6 @@ function CalcTimeOnDone (array,array2){
                         timeDone: moment().format("HH:mm"),
                         timeLast: moment.utc(moment(moment().format("HH:mm"), "HH:mm").diff(moment(item.timeAdded, "HH:mm"))).format("HH:mm")
                     })
-                    // console.log(tempArr2)
                     tempArr.push({
                         spec: spec.display,
                         time: moment.utc(moment(moment().format("HH:mm"), "HH:mm").diff(moment(item.timeAdded, "HH:mm"))).format("HH:mm"),
@@ -44,10 +37,8 @@ function CalcTimeOnDone (array,array2){
             })
         })
     }
-   console.log(tempArr);
 
     localStorage.setItem('listDone',JSON.stringify(tempArr2));
-    console.log(tempArr2);
     let tempArr3 = array.filter((el, i, tempArr2) => i === tempArr2.indexOf(el));
 
 
@@ -72,7 +63,6 @@ function CalcTimeOnDone (array,array2){
     result.forEach(function(item) {
         item.avgTime = moment.utc(moment.duration((item.time / item.instances), "seconds").asMilliseconds()).format("HH:mm")
     })
-    console.log(result);
     let tempTime = "00:00";
     peopleArr = tempArr3.concat(tempArr2);
     let tempArr4 = [];
@@ -82,7 +72,7 @@ function CalcTimeOnDone (array,array2){
                 if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === false && peopleArr[i-1].bool === false){
                     let temptemp = moment(o.avgTime, "HH:mm").diff(moment().startOf("day"), "seconds");
                     tempTime = moment.utc(moment.duration(temptemp*2, "seconds").asMilliseconds()).format("HH:mm")
-                    console.log(peopleArr[i].spec + " "+tempTime)
+
                 }else if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === true){
                     tempTime = o.avgTime;
                 }else if(i>0 && peopleArr[i].spec !== peopleArr[i-1].spec){
@@ -99,7 +89,7 @@ function CalcTimeOnDone (array,array2){
                 if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === false && peopleArr[i-1].bool === false){
                     let temptemp = moment(o.avgTime, "HH:mm").diff(moment().startOf("day"), "seconds");
                     tempTime = moment.utc(moment.duration(temptemp*2, "seconds").asMilliseconds()).format("HH:mm")
-                    console.log(peopleArr[i].spec + " "+tempTime)
+
                 }else if(i>0 && peopleArr[i].spec === peopleArr[i-1].spec && peopleArr[i].bool === true){
                     tempTime = o.avgTime;
                 }else if(i>0 && peopleArr[i].spec !== peopleArr[i-1].spec){
@@ -134,38 +124,6 @@ function CalcTimeOnDone (array,array2){
         document.getElementById("admin-path").className = "admin-active"
     }
 }*/
-function SideBarNav(props){
-    console.log(window.location.pathname)
-    return (
-        <div className="navBar">
-            <header id="menu">
-                Meniu
-            </header>
-            <ul className="nav">
-                <li>
-                    <a href={adminPath}>
-                        <i className="zmdi zmdi-link"></i> Administracinis puslapis
-                    </a>
-                </li><li>
-                    <a href={boardPath}>
-                        <i className="zmdi zmdi-link"></i> Švieslentė
-                    </a>
-                </li>
-                <li>
-                    <a href={specPath}>
-                        <i className="zmdi zmdi-widgets"></i> Specialisto puslapis
-                    </a>
-                </li>
-                <li>
-                    <a href={userPath}>
-                        <i className="zmdi zmdi-widgets"></i> Lankytojo puslapis
-                    </a>
-                </li>
-            </ul>
-        </div>
-    );
-}
-
 function Filter(props) {
     function updateSpec(evt) {
         props.updateFromState({ currentSpec: evt.target.value });
@@ -230,11 +188,9 @@ class SpecPage extends Component{
     }
 
     buildList =(data)=>{
-        console.log(data);
         this.setState({listOfPeople: data})
     }
     componentDidMount() {
-        console.log('did mount')
 
         let data = localStorage.getItem('listNotDone');
         if (data) {
@@ -249,7 +205,7 @@ class SpecPage extends Component{
             listOfPeople: newArr = listOfPeople.filter((people, index) => index !== indexToDelete)
         }));
 
-console.log(this.state)
+
     };*/
 
 /*
@@ -280,7 +236,7 @@ console.log(this.state)
             }
         })
         tempArr2 = peopleDoneArr.concat(tempArr)
-        //console.log(tempArr2)
+
         if(data) {
             localStorage.setItem('listNotDone',JSON.stringify(tempArr))
             localStorage.setItem('listDone',JSON.stringify(peopleDoneArr))
@@ -321,7 +277,6 @@ console.log(this.state)
         });
     }
     render(){
-        console.log('render');
 
         let o=1;
         return (
@@ -371,3 +326,16 @@ console.log(this.state)
     }
 }
 export default SpecPage;
+
+Filter.propTypes = {
+  currentSpec: PropTypes.string,
+  updateFromState: PropTypes.func
+}
+
+PatientRow.propTypes = {
+  counter: PropTypes.number,
+  handleDoneCheck: PropTypes.func,
+  name: PropTypes.string,
+  qNumber: PropTypes.number,
+  surname: PropTypes.string
+}
