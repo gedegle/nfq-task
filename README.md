@@ -1,11 +1,11 @@
 Projektas buvo sukurtas naudojant [Create React App](https://github.com/facebook/create-react-app).
 ## Kam skirtas 
 
-Tai yra **nfq** akademijos stojimo užduoties įgyvendinimas.
+Tai yra **nfq** akademijos stojimo užduoties įgyvendinimas. Tai yra pirmas kartas dirbant su ReactJS.
 Šis puslapis skirtas administruoti lankytojus (šiuo atveju - ligoninės pacientus) bei lankytojams stebėti, kiek reikia laukti iki priėjimo pas specialistą.
 
 ## Kaip veikia
-
+Ne visi puslapio funcionalumai veikia, projektas ne iki galo užbaigtas dėl laiko stokos.
 
 ### `administracinis puslapis`
 
